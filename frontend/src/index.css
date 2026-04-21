@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* ── Paleta Beige + Vino Sofisticado ── */
+  --bg-base:       #F9F6F0;
+  --bg-surface:    #FFFFFF;
+  --bg-raised:     #F0EDE4;
+  --bg-card:       #FFFFFF;
+  --color-border:  #E5E0D5;
+  --color-border2: #D6CFC0;
+
+  --text-primary:  #1C1917;
+  --text-secondary: #57534E;
+  --text-muted:    #A8A29E;
+
+  --accent:        #721c24; /* Color Vino */
+  --accent-hover:  #58151c;
+  --accent-glow:   rgba(114, 28, 36, 0.2);
+  --accent-glow2:  rgba(114, 28, 36, 0.05); 
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* ── Scrollbar personalizada ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-raised); }
+::-webkit-scrollbar-thumb { background: var(--color-border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── Animaciones ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero sneaker: entrada con slide + spring bounce desde la derecha */
+@keyframes heroEntrance {
+  0%   { opacity: 0; transform: translateX(60px) scale(0.88); }
+  60%  { opacity: 1; transform: translateX(-8px) scale(1.03); }
+  80%  { transform: translateX(4px) scale(0.99); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* Flotación suave y continua */
+@keyframes sneakerFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-18px); }
+}
+
+/* Sombra sincronizada con la flotación */
+@keyframes shadowFloat {
+  0%, 100% { transform: translateX(-50%) scaleX(1);   opacity: 0.6; filter: blur(10px); }
+  50%       { transform: translateX(-50%) scaleX(0.75); opacity: 0.3; filter: blur(14px); }
+}
+
+
+
