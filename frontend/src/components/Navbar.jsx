@@ -5,17 +5,42 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import logoImg from '../assets/logo.png';
 
+const IconSearch = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+);
+const IconClose = ({ size = 5 }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={`w-${size} h-${size}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+const IconCart = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+  </svg>
+);
+const IconMenu = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+);
+
 export default function Navbar({ onCartOpen }) {
   const { user, logout, isAdmin } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchVal, setSearchVal]   = useState('');
+  const [searchVal, setSearchVal] = useState('');
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const closeMobile = () => setMobileOpen(false);
 
   const handleLogout = async () => {
     await logout();
     toast.success('Sesión cerrada');
     navigate('/');
+    closeMobile();
   };
 
   const handleSearch = (e) => {
@@ -23,153 +48,152 @@ export default function Navbar({ onCartOpen }) {
     navigate(`/?search=${encodeURIComponent(searchVal)}`);
     setSearchOpen(false);
     setSearchVal('');
+    closeMobile();
   };
 
   return (
-    <nav style={{
-      position: 'sticky', top: 0, zIndex: 50,
-      background: 'rgba(249,246,240,0.85)',
-      backdropFilter: 'blur(20px)',
-      borderBottom: '1px solid var(--color-border)',
-      boxShadow: '0 1px 0 rgba(185,28,28,0.05)',
-    }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem', display: 'flex', alignItems: 'center', height: '4.5rem', gap: '1.5rem' }}>
+    /* position:relative needed so the absolute mobile menu is relative to the nav */
+    <nav className="sticky top-0 z-50 bg-base/85 backdrop-blur-xl border-b border-border shadow-[0_1px_0_rgba(185,28,28,0.05)] relative">
+
+      {/* ── Desktop bar ── */}
+      <div className="max-w-7xl mx-auto px-6 flex items-center h-[4.5rem] gap-6">
 
         {/* Logo */}
-        <Link to="/" style={{ textDecoration: 'none', flexShrink: 0, display: 'flex', alignItems: 'center' }}>
-          <img
-            src={logoImg}
-            alt="SNEAK-OUT"
-            style={{ height: '3.2rem', width: 'auto', objectFit: 'contain' }}
-          />
+        <Link to="/" className="shrink-0 flex items-center no-underline" onClick={closeMobile}>
+          <img src={logoImg} alt="SNEAK-OUT" className="h-[3.2rem] w-auto object-contain" />
         </Link>
 
-        {/* Nav links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', fontSize: '0.875rem', fontWeight: 500, flex: 1, justifyContent: 'center' }}>
-          <Link to="/" style={{ color: 'var(--text-primary)', textDecoration: 'none', transition: 'color 0.2s' }}
-            onMouseEnter={e => { e.target.style.color = 'var(--accent)'; }}
-            onMouseLeave={e => { e.target.style.color = 'var(--text-primary)'; }}>
-            Inicio
-          </Link>
-          <Link to="/?section=catalogo" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }}
-            onMouseEnter={e => { e.target.style.color = 'var(--accent)'; }}
-            onMouseLeave={e => { e.target.style.color = 'var(--text-secondary)'; }}>
-            Catálogo
-          </Link>
-          <Link to="/contacto" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }}
-            onMouseEnter={e => { e.target.style.color = 'var(--accent)'; }}
-            onMouseLeave={e => { e.target.style.color = 'var(--text-secondary)'; }}>
-            Contacto
-          </Link>
+        {/* Nav links — hidden on mobile */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium flex-1 justify-center">
+          <Link to="/" className="nav-link text-primary">Inicio</Link>
+          <Link to="/?section=catalogo" className="nav-link">Catálogo</Link>
+          <Link to="/contacto" className="nav-link">Contacto</Link>
           {isAdmin && (
-            <Link to="/admin" style={{
-              color: 'var(--accent)', textDecoration: 'none', fontWeight: 700,
-            }}>
+            <Link to="/admin" className="text-accent font-bold no-underline hover:text-accent-hover transition-colors">
               Admin ⚡
             </Link>
           )}
         </div>
 
-        {/* Right icons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
+        {/* Right side */}
+        <div className="flex items-center gap-1 ml-auto">
 
           {/* Search */}
           {searchOpen ? (
-            <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <form onSubmit={handleSearch} className="flex items-center gap-2">
               <input
                 autoFocus
                 type="text"
                 value={searchVal}
                 onChange={(e) => setSearchVal(e.target.value)}
                 placeholder="Buscar..."
-                style={{
-                  width: '11rem', padding: '0.375rem 0.75rem',
-                  fontSize: '0.875rem', borderRadius: '0.5rem',
-                  background: 'var(--bg-surface)', border: '1px solid var(--accent)',
-                  color: 'var(--text-primary)', outline: 'none',
-                  boxShadow: '0 0 10px var(--accent-glow2)',
-                }}
+                className="w-44 px-3 py-1.5 text-sm rounded-lg bg-surface border border-accent text-primary outline-none"
               />
               <button type="button" onClick={() => setSearchOpen(false)}
-                style={{ color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '1rem', height: '1rem' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                className="bg-transparent border-none cursor-pointer text-secondary hover:text-accent transition-colors p-1">
+                <IconClose size={4} />
               </button>
             </form>
           ) : (
             <button onClick={() => setSearchOpen(true)} aria-label="Buscar"
-              style={{ padding: '0.5rem', borderRadius: '50%', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'color 0.2s' }}
-              onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
-              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>
-              <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '1.25rem', height: '1.25rem' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              className="p-2 rounded-full bg-transparent border-none cursor-pointer text-secondary hover:text-accent transition-colors">
+              <IconSearch />
             </button>
           )}
 
           {/* Cart */}
           <button onClick={onCartOpen} aria-label="Abrir carrito"
-            style={{ position: 'relative', padding: '0.5rem', borderRadius: '50%', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', transition: 'color 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.color = 'var(--accent)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-secondary)'}>
-            <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '1.25rem', height: '1.25rem' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
+            className="relative p-2 rounded-full bg-transparent border-none cursor-pointer text-secondary hover:text-accent transition-colors">
+            <IconCart />
             {itemCount > 0 && (
-              <span style={{
-                position: 'absolute', top: '0', right: '0',
-                background: 'var(--accent)', color: '#fff',
-                fontSize: '0.6rem', fontWeight: 900,
-                borderRadius: '50%', width: '1rem', height: '1rem',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
+              <span className="absolute top-0 right-0 bg-accent text-white text-[0.6rem] font-black rounded-full w-4 h-4 flex items-center justify-center leading-none">
                 {itemCount}
               </span>
             )}
           </button>
 
+          {/* Auth — desktop */}
+          <div className="hidden md:flex items-center gap-3 ml-1">
+            {user ? (
+              <>
+                <span className="text-xs text-secondary">
+                  Hola, <span className="text-accent font-semibold">{user.name}</span>
+                </span>
+                <button onClick={handleLogout}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-raised border border-border text-secondary cursor-pointer transition-all duration-200 hover:border-accent hover:text-accent">
+                  Salir
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-sm text-secondary no-underline hover:text-accent transition-colors">
+                  Entrar
+                </Link>
+                <Link to="/register"
+                  className="text-sm px-4 py-1.5 rounded-lg bg-accent text-white font-bold no-underline hover:bg-accent-hover transition-all duration-200">
+                  Registro
+                </Link>
+              </>
+            )}
+          </div>
 
-          {/* Auth */}
-          {user ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: '0.25rem' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Hola, <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{user.name}</span>
-              </span>
-              <button onClick={handleLogout}
-                style={{
-                  fontSize: '0.75rem', padding: '0.375rem 0.75rem',
-                  borderRadius: '0.5rem', background: 'var(--bg-raised)',
-                  border: '1px solid var(--color-border)', color: 'var(--text-secondary)',
-                  cursor: 'pointer', transition: 'all 0.2s',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}>
-                Salir
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: '0.25rem' }}>
-              <Link to="/login" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.2s' }}
-                onMouseEnter={e => e.target.style.color = 'var(--accent)'}
-                onMouseLeave={e => e.target.style.color = 'var(--text-secondary)'}>
-                Entrar
-              </Link>
-              <Link to="/register" style={{
-                fontSize: '0.875rem', padding: '0.375rem 1rem',
-                borderRadius: '0.5rem', background: 'var(--accent)',
-                color: '#fff', fontWeight: 700, textDecoration: 'none',
-                transition: 'all 0.2s',
-              }}
-                onMouseEnter={e => { e.target.style.background = 'var(--accent-hover)'; }}
-                onMouseLeave={e => { e.target.style.background = 'var(--accent)'; }}>
-                Registro
-              </Link>
-            </div>
-          )}
+          {/* Hamburger — mobile only */}
+          <button
+            onClick={() => setMobileOpen(o => !o)}
+            aria-label="Abrir menú"
+            className="md:hidden p-2 rounded-lg bg-transparent border-none cursor-pointer text-secondary hover:text-accent transition-colors ml-1">
+            {mobileOpen ? <IconClose /> : <IconMenu />}
+          </button>
         </div>
-
       </div>
+
+      {/* ── Mobile menu — position:absolute so it overlays, never pushes content ── */}
+      {mobileOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-base/95 backdrop-blur-xl border-b border-border z-50 shadow-xl">
+          <div className="px-6 py-5 flex flex-col gap-1">
+            <Link to="/" className="nav-link text-primary font-medium text-sm py-3 border-b border-border" onClick={closeMobile}>
+              Inicio
+            </Link>
+            <Link to="/?section=catalogo" className="nav-link text-sm py-3 border-b border-border" onClick={closeMobile}>
+              Catálogo
+            </Link>
+            <Link to="/contacto" className="nav-link text-sm py-3 border-b border-border" onClick={closeMobile}>
+              Contacto
+            </Link>
+            {isAdmin && (
+              <Link to="/admin" className="text-accent font-bold no-underline text-sm py-3 border-b border-border" onClick={closeMobile}>
+                Admin ⚡
+              </Link>
+            )}
+
+            {/* Auth — mobile */}
+            <div className="pt-3">
+              {user ? (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-secondary">
+                    Hola, <span className="text-accent font-semibold">{user.name}</span>
+                  </span>
+                  <button onClick={handleLogout}
+                    className="text-xs px-3 py-1.5 rounded-lg bg-raised border border-border text-secondary cursor-pointer hover:border-accent hover:text-accent transition-all duration-200">
+                    Salir
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <Link to="/login" onClick={closeMobile}
+                    className="flex-1 text-center text-sm py-2 rounded-lg border border-border text-secondary no-underline hover:border-accent hover:text-accent transition-all duration-200">
+                    Entrar
+                  </Link>
+                  <Link to="/register" onClick={closeMobile}
+                    className="flex-1 text-center text-sm py-2 rounded-lg bg-accent text-white font-bold no-underline hover:bg-accent-hover transition-all duration-200">
+                    Registro
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

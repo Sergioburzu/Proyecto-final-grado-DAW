@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 import logoImg from '../assets/logo.png';
 import toast from 'react-hot-toast';
@@ -20,99 +19,48 @@ export default function ContactoPage() {
     }, 1200);
   };
 
-  const inputStyle = {
-    width: '100%',
-    padding: '0.75rem 1rem',
-    borderRadius: '0.625rem',
-    border: '1.5px solid var(--color-border)',
-    background: 'var(--bg-base)',
-    color: 'var(--text-primary)',
-    fontSize: '0.9rem',
-    outline: 'none',
-    transition: 'all 0.2s',
-    boxSizing: 'border-box',
-  };
-  const onFocusAccent = (e) => { e.target.style.borderColor = 'var(--accent)'; };
-  const onBlurAccent  = (e) => { e.target.style.borderColor = 'var(--color-border)'; };
-
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
+    <div className="min-h-screen bg-base">
 
-      {/* ── HERO BANNER ── */}
-      <div style={{
-        background: 'var(--bg-raised)',
-        borderBottom: '1px solid var(--color-border)',
-        padding: '4rem 1.5rem 3rem',
-        textAlign: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        <img src={logoImg} alt="SNEAK-OUT" style={{
-          height: '6rem', marginBottom: '1.5rem',
-        }} />
-        <h1 style={{
-          fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', margin: 0,
-        }}>
-          Contáctanos
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', marginTop: '0.75rem', fontSize: '1rem' }}>
+      {/* Hero banner */}
+      <div className="bg-raised border-b border-border pt-16 pb-12 text-center px-6 relative overflow-hidden">
+        <img src={logoImg} alt="SNEAK-OUT" className="h-24 mx-auto mb-6" />
+        <h1 className="text-4xl font-black text-primary mb-4">Contáctanos</h1>
+        <p className="text-secondary mt-3 text-base">
           ¿Dudas sobre un pedido, tallas o colaboraciones? Estamos aquí para ayudarte.
         </p>
       </div>
 
-      {/* ── CONTENIDO ── */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '4rem 1.5rem', display: 'grid', gridTemplateColumns: '1fr 1.6fr', gap: '3rem' }}>
+      {/* Content */}
+      <div className="max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-12">
 
-        {/* Info */}
+        {/* Info cards */}
         <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '1.5rem' }}>
-            Información de contacto
-          </h2>
+          <h2 className="text-2xl font-black text-primary mb-6">Información de contacto</h2>
 
           {[
-            { icon: '📍', title: 'Dirección',   lines: ['Calle Gran Vía 42', 'Madrid, 28013, España'] },
-            { icon: '📞', title: 'Teléfono',    lines: ['+34 910 000 000'] },
-            { icon: '✉️', title: 'Email',       lines: ['hola@sneakout.es', 'soporte@sneakout.es'] },
-            { icon: '🕐', title: 'Horario',     lines: ['Lunes – Viernes: 9:00 – 20:00', 'Sábados: 10:00 – 15:00'] },
+            { icon: '📍', title: 'Dirección',  lines: ['Calle Gran Vía 42', 'Madrid, 28013, España'] },
+            { icon: '📞', title: 'Teléfono',   lines: ['+34 910 000 000'] },
+            { icon: '✉️', title: 'Email',      lines: ['hola@sneakout.es', 'soporte@sneakout.es'] },
+            { icon: '🕐', title: 'Horario',    lines: ['Lunes – Viernes: 9:00 – 20:00', 'Sábados: 10:00 – 15:00'] },
           ].map((item) => (
-            <div key={item.title} style={{
-              display: 'flex', gap: '1rem', marginBottom: '1.25rem',
-              padding: '1.25rem', background: 'var(--bg-raised)',
-              borderRadius: '0.75rem', border: '1px solid var(--color-border)',
-              transition: 'all 0.2s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border)'; }}>
-              <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>{item.icon}</span>
+            <div key={item.title}
+              className="flex gap-4 mb-5 p-5 bg-raised rounded-xl border border-border transition-colors duration-200 hover:border-accent cursor-default">
+              <span className="text-2xl shrink-0">{item.icon}</span>
               <div>
-                <p style={{ fontWeight: 700, color: 'var(--accent)', marginBottom: '0.25rem', fontSize: '0.85rem' }}>
-                  {item.title}
-                </p>
-                {item.lines.map(l => (
-                  <p key={l} style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: 0 }}>{l}</p>
-                ))}
+                <p className="font-bold text-accent mb-1 text-[0.85rem]">{item.title}</p>
+                {item.lines.map(l => <p key={l} className="text-secondary text-sm m-0">{l}</p>)}
               </div>
             </div>
           ))}
 
-          {/* Redes sociales */}
-          <div style={{ marginTop: '1rem' }}>
-            <p style={{ fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem', fontSize: '0.85rem' }}>
-              Síguenos
-            </p>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+          {/* Social */}
+          <div className="mt-4">
+            <p className="font-bold text-muted mb-3 text-[0.85rem]">Síguenos</p>
+            <div className="flex gap-3 flex-wrap">
               {['Instagram', 'TikTok', 'Twitter/X'].map(red => (
-                <a key={red} href="#" style={{
-                  padding: '0.4rem 0.9rem',
-                  background: 'var(--bg-raised)', border: '1px solid var(--color-border)',
-                  borderRadius: '2rem', fontSize: '0.8rem',
-                  color: 'var(--text-secondary)', textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}
-                  onMouseEnter={e => { e.target.style.background = 'var(--accent)'; e.target.style.color = '#fff'; e.target.style.borderColor = 'var(--accent)'; }}
-                  onMouseLeave={e => { e.target.style.background = 'var(--bg-raised)'; e.target.style.color = 'var(--text-secondary)'; e.target.style.borderColor = 'var(--color-border)'; }}>
+                <a key={red} href="#"
+                  className="px-3.5 py-1.5 bg-raised border border-border rounded-full text-[0.8rem] text-secondary no-underline transition-all duration-200 hover:bg-accent hover:text-white hover:border-accent">
                   {red}
                 </a>
               ))}
@@ -120,89 +68,40 @@ export default function ContactoPage() {
           </div>
         </div>
 
-        {/* Formulario */}
-        <div style={{
-          background: 'var(--bg-card)',
-          borderRadius: '1rem',
-          border: '1px solid var(--color-border)',
-          padding: '2.5rem',
-        }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
-            Envíanos un mensaje
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '2rem' }}>
-            Responderemos en menos de 24 horas en días laborables.
-          </p>
+        {/* Contact form */}
+        <div className="card p-10">
+          <h2 className="text-2xl font-black text-primary mb-2">Envíanos un mensaje</h2>
+          <p className="text-secondary text-sm mb-8">Responderemos en menos de 24 horas en días laborables.</p>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.4rem' }}>
-                  Nombre *
-                </label>
-                <input
-                  type="text" name="nombre" required
-                  value={form.nombre} onChange={handleChange}
-                  placeholder="Tu nombre"
-                  style={inputStyle} onFocus={onFocusAccent} onBlur={onBlurAccent}
-                />
+                <label className="form-label">Nombre *</label>
+                <input type="text" name="nombre" required value={form.nombre} onChange={handleChange}
+                  placeholder="Tu nombre" className="input-field" />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.4rem' }}>
-                  Email *
-                </label>
-                <input
-                  type="email" name="email" required
-                  value={form.email} onChange={handleChange}
-                  placeholder="tu@email.com"
-                  style={inputStyle} onFocus={onFocusAccent} onBlur={onBlurAccent}
-                />
+                <label className="form-label">Email *</label>
+                <input type="email" name="email" required value={form.email} onChange={handleChange}
+                  placeholder="tu@email.com" className="input-field" />
               </div>
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.4rem' }}>
-                Asunto *
-              </label>
-              <input
-                type="text" name="asunto" required
-                value={form.asunto} onChange={handleChange}
-                placeholder="¿En qué te podemos ayudar?"
-                style={inputStyle} onFocus={onFocusAccent} onBlur={onBlurAccent}
-              />
+              <label className="form-label">Asunto *</label>
+              <input type="text" name="asunto" required value={form.asunto} onChange={handleChange}
+                placeholder="¿En qué te podemos ayudar?" className="input-field" />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#666', marginBottom: '0.4rem' }}>
-                Mensaje *
-              </label>
-              <textarea
-                name="mensaje" required rows={5}
-                value={form.mensaje} onChange={handleChange}
+              <label className="form-label">Mensaje *</label>
+              <textarea name="mensaje" required rows={5} value={form.mensaje} onChange={handleChange}
                 placeholder="Escribe tu mensaje aquí..."
-                style={{ ...inputStyle, resize: 'vertical', fontFamily: 'inherit' }}
-                onFocus={onFocusAccent} onBlur={onBlurAccent}
-              />
+                className="input-field resize-y font-[inherit]" />
             </div>
 
-            <button
-              type="submit"
-              disabled={sending}
-              style={{
-                padding: '0.875rem',
-                background: 'var(--accent)',
-                color: '#fff',
-                fontWeight: 900,
-                fontSize: '0.9rem',
-                borderRadius: '0.625rem',
-                border: 'none',
-                cursor: sending ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s',
-                letterSpacing: '0.03em',
-              }}
-              onMouseEnter={e => { if (!sending) { e.currentTarget.style.background = 'var(--accent-hover)'; } }}
-              onMouseLeave={e => { if (!sending) { e.currentTarget.style.background = 'var(--accent)'; } }}
-            >
+            <button type="submit" disabled={sending}
+              className={`btn-accent w-full py-3.5 text-sm tracking-wide ${sending ? 'opacity-80 cursor-not-allowed' : ''}`}>
               {sending ? 'Enviando...' : 'Enviar Mensaje →'}
             </button>
           </form>

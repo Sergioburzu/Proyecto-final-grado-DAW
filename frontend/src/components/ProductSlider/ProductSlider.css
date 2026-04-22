@@ -1,0 +1,319 @@
+/* =====================================================
+   ProductSlider — animaciones custom
+   ===================================================== */
+
+/* ── Flotación del producto ──────────────────────────── */
+@keyframes psFloat {
+  0%,
+  100% {
+    transform: rotate(-15deg) translateY(0px);
+  }
+  50% {
+    transform: rotate(-15deg) translateY(-20px);
+  }
+}
+
+/* Sombra sincronizada */
+@keyframes psShadow {
+  0%,
+  100% {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 0.5;
+    filter: blur(12px);
+  }
+  50% {
+    transform: translateX(-50%) scaleX(0.65);
+    opacity: 0.2;
+    filter: blur(18px);
+  }
+}
+
+/* ── Entrada del slider al montar ────────────────────── */
+@keyframes psSliderIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Transiciones de TEXTO ───────────────────────────── */
+
+/* Texto sale a la IZQUIERDA (→ siguiente) */
+@keyframes psTextExitLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+/* Texto sale a la DERECHA (← anterior) */
+@keyframes psTextExitRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Texto entra desde la DERECHA (→ siguiente) */
+@keyframes psTextEnterRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Texto entra desde la IZQUIERDA (← anterior) */
+@keyframes psTextEnterLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Transiciones de IMAGEN ──────────────────────────── */
+
+/* Imagen sale a la DERECHA (→ siguiente) */
+@keyframes psImgExitRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Imagen sale a la IZQUIERDA (← anterior) */
+@keyframes psImgExitLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+/* Imagen entra desde la IZQUIERDA (→ siguiente) */
+@keyframes psImgEnterLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Imagen entra desde la DERECHA (← anterior) */
+@keyframes psImgEnterRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Clases de animación aplicadas por JS ─────────────── */
+
+.ps-float {
+  animation: psFloat 3s ease-in-out infinite;
+}
+
+.ps-shadow {
+  animation: psShadow 3s ease-in-out infinite;
+}
+
+.ps-text-exit-left {
+  animation: psTextExitLeft 0.6s ease-in-out forwards;
+}
+
+.ps-text-exit-right {
+  animation: psTextExitRight 0.6s ease-in-out forwards;
+}
+
+.ps-text-enter-right {
+  animation: psTextEnterRight 0.6s ease-in-out forwards;
+}
+
+.ps-text-enter-left {
+  animation: psTextEnterLeft 0.6s ease-in-out forwards;
+}
+
+.ps-img-exit-right {
+  animation: psImgExitRight 0.6s ease-in-out forwards;
+}
+
+.ps-img-exit-left {
+  animation: psImgExitLeft 0.6s ease-in-out forwards;
+}
+
+.ps-img-enter-left {
+  animation: psImgEnterLeft 0.6s ease-in-out forwards;
+}
+
+.ps-img-enter-right {
+  animation: psImgEnterRight 0.6s ease-in-out forwards;
+}
+
+/* ── Skeleton ────────────────────────────────────────── */
+@keyframes psPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.ps-skeleton {
+  animation: psPulse 1.6s ease-in-out infinite;
+}
+
+/* ── Slider mount ────────────────────────────────────── */
+.ps-mount {
+  animation: psSliderIn 0.7s ease-out forwards;
+}
+
+/* ── Stars ───────────────────────────────────────────── */
+.ps-star {
+  color: #f59e0b;
+  font-size: 1.1rem;
+}
+
+/* ── BUY NOW button underline ────────────────────────── */
+.ps-buy-btn {
+  position: relative;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  transition: color 0.2s;
+}
+
+.ps-buy-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: #ffffff;
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.ps-buy-btn:hover::after {
+  transform: scaleX(0.4);
+  transform-origin: left;
+}
+
+.ps-buy-btn:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Arrow buttons ───────────────────────────────────── */
+.ps-arrow {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.ps-arrow:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.08);
+}
+
+/* ── Dot indicators ──────────────────────────────────── */
+.ps-dot {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ps-dot.active {
+  background: #ffffff;
+  width: 20px !important;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  .ps-layout {
+    flex-direction: column-reverse !important;
+  }
+
+  .ps-text-area {
+    padding: 1.5rem 1.25rem !important;
+    text-align: center;
+  }
+
+  .ps-name {
+    font-size: 2.2rem !important;
+  }
+
+  .ps-img-area {
+    width: 100% !important;
+    height: 220px !important;
+  }
+
+  .ps-img-area img {
+    width: 200px !important;
+  }
+
+  .ps-arrows {
+    padding: 0 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .ps-name {
+    font-size: 1.6rem !important;
+  }
+}

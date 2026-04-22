@@ -6,77 +6,36 @@ export default function MiniProductCard({ product }) {
   return (
     <div
       onClick={() => navigate(`/producto/${product.id}`)}
-      style={{ cursor: 'pointer' }}
+      className="cursor-pointer group"
     >
-      {/* Image */}
-      <div
-        style={{
-          position: 'relative',
-          aspectRatio: '1',
-          background: 'var(--bg-raised)',
-          borderRadius: '0.75rem',
-          overflow: 'hidden',
-          marginBottom: '0.75rem',
-          border: '1px solid var(--color-border)',
-          transition: 'border-color 0.25s',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.borderColor = 'var(--accent)';
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.borderColor = 'var(--color-border)';
-        }}
-      >
+      {/* Image container */}
+      <div className="relative aspect-square bg-raised rounded-xl overflow-hidden mb-3 border border-border transition-colors duration-200 group-hover:border-accent flex items-center justify-center">
+
         {product.stock <= 5 && product.stock > 0 && (
-          <span style={{
-            position: 'absolute', top: '0.5rem', left: '0.5rem', zIndex: 10,
-            fontSize: '0.6rem', fontWeight: 700, padding: '0.2rem 0.5rem',
-            background: 'var(--accent)', color: '#fff', borderRadius: '0.25rem',
-          }}>
+          <span className="absolute top-2 left-2 z-10 badge-accent">
             BAJO STOCK
           </span>
         )}
         {product.stock === 0 && (
-          <span style={{
-            position: 'absolute', top: '0.5rem', left: '0.5rem', zIndex: 10,
-            fontSize: '0.6rem', fontWeight: 700, padding: '0.2rem 0.5rem',
-            background: 'var(--color-border2)', color: 'var(--text-muted)', borderRadius: '0.25rem',
-          }}>
+          <span className="absolute top-2 left-2 z-10 text-[0.6rem] font-bold px-2 py-0.5 rounded bg-border2 text-muted">
             AGOTADO
           </span>
         )}
+
         <img
           src={product.image_url || 'https://via.placeholder.com/300'}
           alt={product.name}
-          style={{
-            width: '100%', height: '100%',
-            objectFit: 'contain',
-            objectPosition: 'center',
-            padding: '0.75rem',
-            transition: 'transform 0.4s',
-            boxSizing: 'border-box',
-          }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.06)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          className="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.06]"
         />
       </div>
 
       {/* Info */}
-      <p style={{
-        color: 'var(--text-primary)', fontSize: '0.875rem', fontWeight: 600,
-        margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-      }}>
+      <p className="text-sm font-semibold text-primary truncate m-0">
         {product.name}
       </p>
-      <p style={{
-        color: 'var(--accent)', fontSize: '0.875rem', fontWeight: 700, margin: '0.2rem 0 0',
-      }}>
+      <p className="text-sm font-bold text-accent mt-0.5 m-0">
         {Number(product.price).toFixed(2)}€
       </p>
-
     </div>
   );
 }

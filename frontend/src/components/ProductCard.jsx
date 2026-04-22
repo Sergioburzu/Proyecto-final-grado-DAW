@@ -10,7 +10,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div className="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-1">
+    <div className="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1">
       {/* Image */}
       <div className="aspect-square overflow-hidden bg-white/5">
         <img

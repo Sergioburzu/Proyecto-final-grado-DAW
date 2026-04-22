@@ -4,20 +4,14 @@ import { useCart } from '../context/CartContext';
 import { createOrder } from '../services/api';
 import toast from 'react-hot-toast';
 
-const inputCls = {
-  width: '100%',
-  padding: '0.75rem 1rem',
-  borderRadius: '0.75rem',
-  background: 'var(--bg-raised)',
-  border: '1.5px solid var(--color-border)',
-  color: 'var(--text-primary)',
-  fontSize: '0.9rem',
-  outline: 'none',
-  boxSizing: 'border-box',
-  transition: 'all 0.2s',
-};
-const onFN = (e) => { e.target.style.borderColor = 'var(--accent)'; };
-const onBN = (e) => { e.target.style.borderColor = 'var(--color-border)'; };
+function Field({ label, id, children }) {
+  return (
+    <div>
+      <label htmlFor={id} className="block text-xs text-secondary mb-1.5">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 export default function CheckoutPage() {
   const { items, total, clearCart } = useCart();
@@ -35,35 +29,21 @@ export default function CheckoutPage() {
     if (items.length === 0) { toast.error('El carrito está vacío'); return; }
     setLoading(true);
     try {
-      const orderData = {
-        ...form,
-        items: items.map((i) => ({ product_id: i.id, quantity: i.quantity })),
-      };
-      await createOrder(orderData);
+      await createOrder({ ...form, items: items.map(i => ({ product_id: i.id, quantity: i.quantity })) });
       clearCart();
       toast.success('¡Pedido realizado con éxito! 🎉');
       navigate('/');
     } catch (err) {
       toast.error(err.message || 'Error al procesar el pedido');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   if (items.length === 0) {
     return (
-      <div style={{ minHeight: '100vh', background: 'var(--bg-base)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
-        <p style={{ fontSize: '4rem', marginBottom: '1rem' }}>🛒</p>
-        <p style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>Tu carrito está vacío</p>
-        <button onClick={() => navigate('/')} style={{
-          padding: '0.75rem 1.5rem',
-          background: 'var(--accent)', color: '#fff',
-          fontWeight: 700, borderRadius: '0.75rem', border: 'none',
-          cursor: 'pointer', fontSize: '0.9rem',
-          transition: 'all 0.2s',
-        }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-hover)'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}>
+      <div className="min-h-screen bg-base flex flex-col items-center justify-center text-muted gap-4">
+        <p className="text-6xl">🛒</p>
+        <p className="text-xl font-semibold text-secondary">Tu carrito está vacío</p>
+        <button onClick={() => navigate('/')} className="btn-accent px-6 py-3 text-sm mt-2">
           Ver catálogo →
         </button>
       </div>
@@ -71,93 +51,74 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', padding: '3rem 1.5rem' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        <h1 style={{
-          fontSize: '2.5rem', fontWeight: 900, color: 'var(--text-primary)', marginBottom: '0.5rem',
-        }}>
-          Finalizar Compra
-        </h1>
-        <div style={{ height: '2px', width: '80px', background: 'var(--accent)', borderRadius: '1px', marginBottom: '2.5rem' }} />
+    <div className="min-h-screen bg-base py-12 px-6">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-4xl font-black text-primary mb-2">Finalizar Compra</h1>
+        <div className="h-0.5 w-20 bg-accent rounded mb-10" />
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
           {/* Shipping form */}
-          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--color-border)', borderRadius: '1.25rem', padding: '2rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1.5rem' }}>
-              Datos de Envío
-            </h2>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.4rem' }}>Nombre completo</label>
-                <input id="s-name" type="text" name="shipping_name" value={form.shipping_name} onChange={handleChange} required placeholder="Nombre Apellido" style={inputCls} onFocus={onFN} onBlur={onBN} />
+          <div className="card p-8">
+            <h2 className="text-xl font-bold text-primary mb-6">Datos de Envío</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <Field label="Nombre completo" id="s-name">
+                <input id="s-name" type="text" name="shipping_name" value={form.shipping_name}
+                  onChange={handleChange} required placeholder="Nombre Apellido" className="input-field" />
+              </Field>
+              <Field label="Dirección" id="s-address">
+                <input id="s-address" type="text" name="shipping_address" value={form.shipping_address}
+                  onChange={handleChange} required placeholder="Calle, Número, Piso..." className="input-field" />
+              </Field>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Ciudad" id="s-city">
+                  <input id="s-city" type="text" name="shipping_city" value={form.shipping_city}
+                    onChange={handleChange} required placeholder="Madrid" className="input-field" />
+                </Field>
+                <Field label="Código Postal" id="s-zip">
+                  <input id="s-zip" type="text" name="shipping_zip" value={form.shipping_zip}
+                    onChange={handleChange} required placeholder="28001" className="input-field" />
+                </Field>
               </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.4rem' }}>Dirección</label>
-                <input id="s-address" type="text" name="shipping_address" value={form.shipping_address} onChange={handleChange} required placeholder="Calle, Número, Piso..." style={inputCls} onFocus={onFN} onBlur={onBN} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.4rem' }}>Ciudad</label>
-                  <input id="s-city" type="text" name="shipping_city" value={form.shipping_city} onChange={handleChange} required placeholder="Madrid" style={inputCls} onFocus={onFN} onBlur={onBN} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.4rem' }}>Código Postal</label>
-                  <input id="s-zip" type="text" name="shipping_zip" value={form.shipping_zip} onChange={handleChange} required placeholder="28001" style={inputCls} onFocus={onFN} onBlur={onBN} />
-                </div>
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.4rem' }}>Teléfono</label>
-                <input id="s-phone" type="tel" name="shipping_phone" value={form.shipping_phone} onChange={handleChange} required placeholder="+34 600 000 000" style={inputCls} onFocus={onFN} onBlur={onBN} />
+              <Field label="Teléfono" id="s-phone">
+                <input id="s-phone" type="tel" name="shipping_phone" value={form.shipping_phone}
+                  onChange={handleChange} required placeholder="+34 600 000 000" className="input-field" />
+              </Field>
+
+              {/* Simulated payment */}
+              <div className="mt-2 p-4 rounded-xl bg-raised border border-border">
+                <p className="text-sm text-accent font-semibold mb-1">💳 Pago Simulado</p>
+                <p className="text-xs text-secondary">Este es un proyecto académico. No se procesará ningún pago real.</p>
               </div>
 
-              {/* Payment info (simulated) */}
-              <div style={{ marginTop: '0.5rem', padding: '1rem', borderRadius: '0.75rem', background: 'var(--bg-raised)', border: '1px solid var(--color-border)' }}>
-                <p style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600, marginBottom: '0.25rem' }}>💳 Pago Simulado</p>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Este es un proyecto académico. No se procesará ningún pago real.</p>
-              </div>
-
-              <button
-                type="submit" disabled={loading}
-                style={{
-                  width: '100%', padding: '1rem',
-                  background: 'var(--accent)',
-                  color: '#fff', fontWeight: 900, fontSize: '1rem',
-                  border: 'none', borderRadius: '0.75rem',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  marginTop: '0.5rem', transition: 'all 0.2s',
-                  opacity: loading ? 0.8 : 1,
-                }}
-                onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = 'var(--accent-hover)'; } }}
-                onMouseLeave={e => { if (!loading) { e.currentTarget.style.background = 'var(--accent)'; } }}
-              >
+              <button type="submit" disabled={loading}
+                className={`btn-accent w-full py-4 text-base mt-2 ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}>
                 {loading ? 'Procesando pedido...' : `Confirmar Pedido · ${total.toFixed(2)}€ →`}
               </button>
             </form>
           </div>
 
           {/* Order summary */}
-          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--color-border)', borderRadius: '1.25rem', padding: '2rem', height: 'fit-content' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '1.5rem' }}>
-              Resumen del Pedido
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '20rem', overflowY: 'auto' }}>
+          <div className="card p-8 h-fit">
+            <h2 className="text-xl font-bold text-primary mb-6">Resumen del Pedido</h2>
+            <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">
               {items.map((item) => (
-                <div key={item.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  <img src={item.image_url || 'https://via.placeholder.com/60'} alt={item.name} style={{ width: '3.5rem', height: '3.5rem', borderRadius: '0.5rem', objectFit: 'cover', border: '1px solid var(--color-border)' }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>{item.name}</p>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.1rem 0 0' }}>{item.brand} · x{item.quantity}</p>
+                <div key={item.id} className="flex gap-3 items-center">
+                  <img src={item.image_url || 'https://via.placeholder.com/60'} alt={item.name}
+                    className="w-14 h-14 rounded-lg object-cover border border-border shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-primary truncate m-0">{item.name}</p>
+                    <p className="text-xs text-muted mt-0.5 m-0">{item.brand} · x{item.quantity}</p>
                   </div>
-                  <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--accent)' }}>
+                  <span className="text-sm font-bold text-accent shrink-0">
                     {(item.price * item.quantity).toFixed(2)}€
                   </span>
                 </div>
               ))}
             </div>
-            <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Total</span>
-              <span style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--text-primary)' }}>{total.toFixed(2)}€</span>
+            <div className="mt-6 pt-4 border-t border-border flex justify-between items-center">
+              <span className="text-secondary">Total</span>
+              <span className="text-3xl font-black text-primary">{total.toFixed(2)}€</span>
             </div>
           </div>
         </div>

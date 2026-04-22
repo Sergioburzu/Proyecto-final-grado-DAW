@@ -1,87 +1,46 @@
-import { Link } from 'react-router-dom';
-
 export default function Footer() {
   return (
-    <footer style={{ background: 'var(--bg-base)', borderTop: '1px solid var(--color-border)', marginTop: '5rem' }}>
+    <footer className="bg-base border-t border-border mt-20">
 
       {/* Newsletter */}
-      <div style={{
-        background: 'var(--bg-raised)',
-        padding: '3.5rem 1rem',
-        textAlign: 'center',
-        borderBottom: '1px solid var(--color-border)',
-      }}>
-        <h3 style={{
-          fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)',
-          marginBottom: '0.5rem',
-        }}>
+      <div className="bg-raised py-14 text-center border-b border-border px-4">
+        <h3 className="text-2xl font-black text-primary mb-2">
           Suscríbete y Obtén 10% Off
         </h3>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
+        <p className="text-muted text-sm mb-6">
           Recibe notificaciones de drops exclusivos y ofertas especiales
         </p>
         <form
           onSubmit={(e) => e.preventDefault()}
-          style={{ display: 'flex', gap: '0.75rem', maxWidth: '28rem', margin: '0 auto' }}
+          className="flex gap-3 max-w-md mx-auto"
         >
           <input
             type="email"
             placeholder="tu@email.com"
-            style={{
-              flex: 1, padding: '0.625rem 1rem',
-              borderRadius: '0.5rem',
-              background: 'var(--bg-base)',
-              border: '1px solid var(--color-border)',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              outline: 'none',
-              transition: 'all 0.2s',
-            }}
-            onFocus={e => { e.target.style.borderColor = 'var(--accent)'; }}
-            onBlur={e => { e.target.style.borderColor = 'var(--color-border)'; }}
+            className="input-field flex-1"
           />
-          <button
-            type="submit"
-            style={{
-              padding: '0.625rem 1.25rem',
-              background: 'var(--accent)',
-              color: '#fff',
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              borderRadius: '0.5rem',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-hover)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'var(--accent)'; }}
-          >
+          <button type="submit" className="btn-accent px-5 py-2.5 text-sm">
             Suscribirse
           </button>
         </form>
       </div>
 
-      {/* Links */}
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '3rem 1.5rem', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
+      {/* Links grid */}
+      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
         {[
-          { title: 'Tienda',    links: ['Catálogo', 'Tendencias', 'Drops', 'Ofertas'] },
-          { title: 'Ayuda',     links: ['Envíos', 'Devoluciones', 'Tallas', 'FAQ'] },
-          { title: 'Nosotros',  links: ['Historia', 'Tiendas', 'Contacto', 'Blog'] },
-          { title: 'Legal',     links: ['Privacidad', 'Términos', 'Cookies', 'Aviso Legal'] },
+          { title: 'Tienda',   links: ['Catálogo', 'Tendencias', 'Drops', 'Ofertas'] },
+          { title: 'Ayuda',    links: ['Envíos', 'Devoluciones', 'Tallas', 'FAQ'] },
+          { title: 'Nosotros', links: ['Historia', 'Tiendas', 'Contacto', 'Blog'] },
+          { title: 'Legal',    links: ['Privacidad', 'Términos', 'Cookies', 'Aviso Legal'] },
         ].map((col) => (
           <div key={col.title}>
-            <h4 style={{
-              color: 'var(--accent)', fontWeight: 700, fontSize: '0.75rem',
-              marginBottom: '1rem', letterSpacing: '0.1em', textTransform: 'uppercase',
-            }}>
+            <h4 className="text-accent font-bold text-xs mb-4 tracking-[0.1em] uppercase">
               {col.title}
             </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <ul className="list-none flex flex-col gap-2">
               {col.links.map((link) => (
                 <li key={link}>
-                  <a href="#" style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textDecoration: 'none', transition: 'color 0.2s' }}
-                    onMouseEnter={e => { e.target.style.color = 'var(--accent)'; }}
-                    onMouseLeave={e => { e.target.style.color = 'var(--text-muted)'; }}>
+                  <a href="#" className="nav-link text-sm">
                     {link}
                   </a>
                 </li>
@@ -91,9 +50,10 @@ export default function Footer() {
         ))}
       </div>
 
-      <div style={{ borderTop: '1px solid var(--color-border)', padding: '1.5rem', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
-          © 2026 <span style={{ color: 'var(--accent)' }}>SNEAK-OUT</span>. Todos los derechos reservados.
+      {/* Copyright */}
+      <div className="border-t border-border px-6 py-6 text-center">
+        <p className="text-secondary text-xs">
+          © 2026 <span className="text-accent">SNEAK-OUT</span>. Todos los derechos reservados.
         </p>
       </div>
     </footer>
