@@ -36,6 +36,7 @@ export default function CheckoutPage() {
     } catch (err) {
       toast.error(err.message || 'Error al procesar el pedido');
     } finally { setLoading(false); }
+
   };
 
   if (items.length === 0) {
