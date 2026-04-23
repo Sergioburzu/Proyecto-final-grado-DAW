@@ -4,23 +4,26 @@
 
 /* ── Flotación del producto ──────────────────────────── */
 @keyframes psFloat {
+
   0%,
   100% {
     transform: rotate(-15deg) translateY(0px);
   }
+
   50% {
     transform: rotate(-15deg) translateY(-20px);
   }
 }
 
-/* Sombra sincronizada */
 @keyframes psShadow {
+
   0%,
   100% {
     transform: translateX(-50%) scaleX(1);
     opacity: 0.5;
     filter: blur(12px);
   }
+
   50% {
     transform: translateX(-50%) scaleX(0.65);
     opacity: 0.2;
@@ -28,126 +31,141 @@
   }
 }
 
-/* ── Entrada del slider al montar ────────────────────── */
 @keyframes psSliderIn {
   from {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* ── Transiciones de TEXTO ───────────────────────────── */
-
-/* Texto sale a la IZQUIERDA (→ siguiente) */
 @keyframes psTextExitLeft {
   from {
     opacity: 1;
     transform: translateX(0);
   }
+
   to {
     opacity: 0;
     transform: translateX(-100%);
   }
 }
 
-/* Texto sale a la DERECHA (← anterior) */
 @keyframes psTextExitRight {
   from {
     opacity: 1;
     transform: translateX(0);
   }
+
   to {
     opacity: 0;
     transform: translateX(100%);
   }
 }
 
-/* Texto entra desde la DERECHA (→ siguiente) */
 @keyframes psTextEnterRight {
   from {
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-/* Texto entra desde la IZQUIERDA (← anterior) */
 @keyframes psTextEnterLeft {
   from {
     opacity: 0;
     transform: translateX(-100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-/* ── Transiciones de IMAGEN ──────────────────────────── */
-
-/* Imagen sale a la DERECHA (→ siguiente) */
 @keyframes psImgExitRight {
   from {
     opacity: 1;
     transform: translateX(0);
   }
+
   to {
     opacity: 0;
     transform: translateX(100%);
   }
 }
 
-/* Imagen sale a la IZQUIERDA (← anterior) */
 @keyframes psImgExitLeft {
   from {
     opacity: 1;
     transform: translateX(0);
   }
+
   to {
     opacity: 0;
     transform: translateX(-100%);
   }
 }
 
-/* Imagen entra desde la IZQUIERDA (→ siguiente) */
 @keyframes psImgEnterLeft {
   from {
     opacity: 0;
     transform: translateX(-100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-/* Imagen entra desde la DERECHA (← anterior) */
 @keyframes psImgEnterRight {
   from {
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-/* ── Clases de animación aplicadas por JS ─────────────── */
+@keyframes psPulse {
 
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ── Clases de animación ─────────────────────────────── */
 .ps-float {
   animation: psFloat 3s ease-in-out infinite;
 }
 
 .ps-shadow {
   animation: psShadow 3s ease-in-out infinite;
+}
+
+.ps-skeleton {
+  animation: psPulse 1.6s ease-in-out infinite;
+}
+
+.ps-mount {
+  animation: psSliderIn 0.7s ease-out forwards;
 }
 
 .ps-text-exit-left {
@@ -182,33 +200,13 @@
   animation: psImgEnterRight 0.6s ease-in-out forwards;
 }
 
-/* ── Skeleton ────────────────────────────────────────── */
-@keyframes psPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
-
-.ps-skeleton {
-  animation: psPulse 1.6s ease-in-out infinite;
-}
-
-/* ── Slider mount ────────────────────────────────────── */
-.ps-mount {
-  animation: psSliderIn 0.7s ease-out forwards;
-}
-
 /* ── Stars ───────────────────────────────────────────── */
 .ps-star {
   color: #f59e0b;
   font-size: 1.1rem;
 }
 
-/* ── BUY NOW button underline ────────────────────────── */
+/* ── BUY NOW button ──────────────────────────────────── */
 .ps-buy-btn {
   position: relative;
   background: none;
@@ -238,7 +236,6 @@
 
 .ps-buy-btn:hover::after {
   transform: scaleX(0.4);
-  transform-origin: left;
 }
 
 .ps-buy-btn:hover {
@@ -283,6 +280,25 @@
   width: 20px !important;
 }
 
+/* ── Título del producto ─────────────────────────────── */
+.ps-name {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: clamp(3rem, 6vw, 7rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  line-height: 1.05;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: min(70vw, 1500px);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
   .ps-layout {
@@ -292,10 +308,6 @@
   .ps-text-area {
     padding: 1.5rem 1.25rem !important;
     text-align: center;
-  }
-
-  .ps-name {
-    font-size: 2.2rem !important;
   }
 
   .ps-img-area {
@@ -310,10 +322,18 @@
   .ps-arrows {
     padding: 0 1rem !important;
   }
+
+  .ps-name {
+    max-width: 65vw;
+    font-size: clamp(1.2rem, 5vw, 2rem);
+    letter-spacing: 0.05em;
+  }
 }
 
 @media (max-width: 480px) {
   .ps-name {
-    font-size: 1.6rem !important;
+    max-width: 70vw;
+    font-size: clamp(2rem, 7vw, 4rem);
+    letter-spacing: 0.03em;
   }
 }
