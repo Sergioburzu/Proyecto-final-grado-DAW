@@ -3,15 +3,18 @@ import { useAuth } from '../../context/AuthContext';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '../../services/api';
 import toast from 'react-hot-toast';
 
+import { CirclePlus, Trash2, Package2, Tag, AlertCircle, Search, FilePenLine, X } from 'lucide-react';
+
 /* ── Icons ─────────────────────────────────────────────────────────────── */
-const IconPlus   = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4"/></svg>;
-const IconEdit   = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>;
-const IconTrash  = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>;
-const IconClose  = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>;
-const IconBox    = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>;
-const IconTag    = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>;
-const IconAlert  = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>;
-const IconSearch = () => <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>;
+const IconPlus = () => <CirclePlus />
+const IconEdit = () => <FilePenLine />
+const IconTrash = () => <Trash2 />
+const IconBox = () => <Package2 />
+const IconTag = () => <Tag />
+const IconAlert = () => <AlertCircle />
+const IconSearch = () => <Search />
+const IconClose = () => <X />
+
 
 /* ── Form default ────────────────────────────────────────────────────── */
 const emptyForm = { name: '', brand: '', description: '', price: '', size: '', image_url: '', stock: '' };
@@ -147,14 +150,14 @@ function ProductModal({ editId, form, onChange, onSubmit, onClose, saving }) {
 /* ── Main AdminDashboard ─────────────────────────────────────────────── */
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const [products, setProducts]       = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [form, setForm]               = useState(emptyForm);
-  const [editId, setEditId]           = useState(null);
-  const [saving, setSaving]           = useState(false);
-  const [showModal, setShowModal]     = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState(emptyForm);
+  const [editId, setEditId] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [search, setSearch]           = useState('');
+  const [search, setSearch] = useState('');
 
   useEffect(() => { fetchProducts(); }, []);
 
@@ -168,7 +171,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleChange  = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const openCreate = () => {
     setForm(emptyForm);
@@ -222,8 +225,8 @@ export default function AdminDashboard() {
 
   /* Derived stats */
   const totalProducts = products.length;
-  const lowStock      = products.filter(p => p.stock <= 5).length;
-  const avgPrice      = totalProducts > 0
+  const lowStock = products.filter(p => p.stock <= 5).length;
+  const avgPrice = totalProducts > 0
     ? (products.reduce((s, p) => s + Number(p.price), 0) / totalProducts).toFixed(2)
     : '0.00';
 
@@ -255,9 +258,9 @@ export default function AdminDashboard() {
 
         {/* ── Stats ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-          <StatCard icon={<IconBox />}   label="Productos en catálogo" value={totalProducts} sub="Total registrados" />
-          <StatCard icon={<IconTag />}   label="Precio medio"          value={`${avgPrice}€`} sub="Media del catálogo" />
-          <StatCard icon={<IconAlert />} label="Stock bajo"            value={lowStock}       sub="5 unidades o menos" />
+          <StatCard icon={<IconBox />} label="Productos en catálogo" value={totalProducts} sub="Total registrados" />
+          <StatCard icon={<IconTag />} label="Precio medio" value={`${avgPrice}€`} sub="Media del catálogo" />
+          <StatCard icon={<IconAlert />} label="Stock bajo" value={lowStock} sub="5 unidades o menos" />
         </div>
 
         {/* ── Search bar ── */}
@@ -344,13 +347,12 @@ export default function AdminDashboard() {
 
                       {/* Stock */}
                       <td className="px-6 py-4 hidden sm:table-cell">
-                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${
-                          product.stock === 0
-                            ? 'bg-red-100 text-red-700'
-                            : product.stock <= 5
-                              ? 'bg-orange-100 text-orange-700'
-                              : 'bg-green-100 text-green-700'
-                        }`}>
+                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${product.stock === 0
+                          ? 'bg-red-100 text-red-700'
+                          : product.stock <= 5
+                            ? 'bg-orange-100 text-orange-700'
+                            : 'bg-green-100 text-green-700'
+                          }`}>
                           {product.stock === 0 ? '⚠ Sin stock' : `${product.stock} uds`}
                         </span>
                       </td>

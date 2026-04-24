@@ -118,7 +118,8 @@ export const createOrder = async (orderData) => {
       shipping_city:    orderData.shipping_city,
       shipping_zip:     orderData.shipping_zip,
       shipping_phone:   orderData.shipping_phone,
-      status:           'pending',
+      total:            orderData.total ?? null,
+      status:           'paid',
     }])
     .select()
     .single();
@@ -130,6 +131,7 @@ export const createOrder = async (orderData) => {
     order_id:   order.id,
     product_id: item.product_id,
     quantity:   item.quantity,
+    unit_price: item.unit_price,
   }));
 
   const { error: itemsError } = await supabase
@@ -145,10 +147,83 @@ export const createOrder = async (orderData) => {
  * Obtiene todos los pedidos del usuario actual (o todos si es admin).
  */
 export const getOrders = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
   const { data, error } = await supabase
     .from('orders')
-    .select('*, order_items(*)');
+    .select('*, order_items(*, products(name, image_url))')
+    .eq('user_id', user?.id)
+    .order('created_at', { ascending: false });
   if (error) throw error;
   return { data };
 };
 
+// ─── Favorites ────────────────────────────────────────────────────────────────
+
+/**
+ * Obtiene todos los favoritos del usuario actual con los detalles del producto.
+ */
+export const getFavorites = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { data: [] };
+
+  const { data, error } = await supabase
+    .from('favorites')
+    .select('*, products(*)')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return { data };
+};
+
+/**
+ * Comprueba si un producto está en los favoritos del usuario actual.
+ */
+export const checkIsFavorite = async (productId) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data, error } = await supabase
+    .from('favorites')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('product_id', productId)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows returned
+  return !!data;
+};
+
+/**
+ * Añade un producto a favoritos.
+ */
+export const addFavorite = async (productId) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Usuario no autenticado');
+
+  const { data, error } = await supabase
+    .from('favorites')
+    .insert([{ user_id: user.id, product_id: productId }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return { data };
+};
+
+/**
+ * Elimina un producto de favoritos.
+ */
+export const removeFavorite = async (productId) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Usuario no autenticado');
+
+  const { error } = await supabase
+    .from('favorites')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('product_id', productId);
+
+  if (error) throw error;
+  return { data: null };
+};

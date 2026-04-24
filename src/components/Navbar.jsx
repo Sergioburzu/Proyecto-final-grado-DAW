@@ -25,6 +25,12 @@ const IconMenu = () => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
   </svg>
 );
+const IconFavorites = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+  </svg>
+);
+
 
 export default function Navbar({ onCartOpen }) {
   const { user, logout, isAdmin } = useAuth();
@@ -100,6 +106,14 @@ export default function Navbar({ onCartOpen }) {
               <IconSearch />
             </button>
           )}
+        
+          {/* Favorites — solo si hay sesión */}
+          {user && (
+            <Link to="/perfil?tab=favoritos" aria-label="Mis favoritos"
+              className="p-2 rounded-full bg-transparent text-secondary hover:text-accent transition-colors">
+              <IconFavorites />
+            </Link>
+          )}
 
           {/* Cart */}
           <button onClick={onCartOpen} aria-label="Abrir carrito"
@@ -116,9 +130,13 @@ export default function Navbar({ onCartOpen }) {
           <div className="hidden md:flex items-center gap-3 ml-1">
             {user ? (
               <>
-                <span className="text-xs text-secondary">
-                  Hola, <span className="text-accent font-semibold">{user.name}</span>
-                </span>
+                <Link
+                  to="/perfil"
+                  title={`Mi perfil (${user.user_metadata?.name || user.email})`}
+                  className="w-8 h-8 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center text-accent font-bold text-sm no-underline hover:bg-accent hover:text-white transition-all duration-200"
+                >
+                  {(user.user_metadata?.name || user.email || 'U').charAt(0).toUpperCase()}
+                </Link>
                 <button onClick={handleLogout}
                   className="text-xs px-3 py-1.5 rounded-lg bg-raised border border-border text-secondary cursor-pointer transition-all duration-200 hover:border-accent hover:text-accent">
                   Salir
@@ -170,9 +188,14 @@ export default function Navbar({ onCartOpen }) {
             <div className="pt-3">
               {user ? (
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-secondary">
-                    Hola, <span className="text-accent font-semibold">{user.name}</span>
-                  </span>
+                  <Link to="/perfil" onClick={closeMobile} className="flex items-center gap-2 no-underline group">
+                    <span className="w-8 h-8 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center text-accent font-bold text-sm group-hover:bg-accent group-hover:text-white transition-all duration-200">
+                      {(user.user_metadata?.name || user.email || 'U').charAt(0).toUpperCase()}
+                    </span>
+                    <span className="text-xs text-secondary group-hover:text-accent transition-colors">
+                      {user.user_metadata?.name || user.email?.split('@')[0]}
+                    </span>
+                  </Link>
                   <button onClick={handleLogout}
                     className="text-xs px-3 py-1.5 rounded-lg bg-raised border border-border text-secondary cursor-pointer hover:border-accent hover:text-accent transition-all duration-200">
                     Salir

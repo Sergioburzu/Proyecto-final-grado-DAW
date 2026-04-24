@@ -29,7 +29,7 @@ export default function CheckoutPage() {
     if (items.length === 0) { toast.error('El carrito está vacío'); return; }
     setLoading(true);
     try {
-      await createOrder({ ...form, items: items.map(i => ({ product_id: i.id, quantity: i.quantity })) });
+      await createOrder({ ...form, total, items: items.map(i => ({ product_id: i.id, quantity: i.quantity, unit_price: i.price })) });
       clearCart();
       toast.success('¡Pedido realizado con éxito! 🎉');
       navigate('/');

@@ -15,6 +15,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ContactoPage from './pages/ContactoPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Protected route wrapper
 function PrivateRoute({ children }) {
@@ -51,6 +52,14 @@ function Layout() {
             element={
               <PrivateRoute>
                 <CheckoutPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/perfil"
+            element={
+              <PrivateRoute>
+                <ProfilePage />
               </PrivateRoute>
             }
           />

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getProduct, getProducts } from '../services/api';
+import { getProduct, getProducts, checkIsFavorite, addFavorite, removeFavorite } from '../services/api';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import MiniProductCard from '../components/MiniProductCard';
 import Footer from '../components/Footer';
 import toast from 'react-hot-toast';
@@ -21,12 +22,15 @@ export default function ProductDetailPage() {
   const { id }      = useParams();
   const navigate    = useNavigate();
   const { addItem } = useCart();
+  const { user }    = useAuth();
 
   const [product, setProduct]       = useState(null);
   const [related, setRelated]       = useState([]);
   const [loading, setLoading]       = useState(true);
   const [selectedSize, setSelected] = useState(null);
   const [activeThumb, setThumb]     = useState(0);
+  const [isFav, setIsFav]           = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
 
   useEffect(() => {
     setSelected(null); setThumb(0);
@@ -37,10 +41,40 @@ export default function ProductDetailPage() {
         const [prodRes, allRes] = await Promise.all([getProduct(id), getProducts()]);
         setProduct(prodRes.data);
         setRelated(allRes.data.filter(p => String(p.id) !== String(id)).slice(0, 4));
+        
+        if (user) {
+          const fav = await checkIsFavorite(id);
+          setIsFav(fav);
+        } else {
+          setIsFav(false);
+        }
       } catch { toast.error('Producto no encontrado'); navigate('/'); }
       finally { setLoading(false); }
     })();
-  }, [id]);
+  }, [id, user]);
+
+  const handleToggleFavorite = async () => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para guardar favoritos');
+      return;
+    }
+    setFavLoading(true);
+    try {
+      if (isFav) {
+        await removeFavorite(id);
+        setIsFav(false);
+        toast.success('Eliminado de favoritos');
+      } else {
+        await addFavorite(id);
+        setIsFav(true);
+        toast.success('Añadido a favoritos ❤️');
+      }
+    } catch (err) {
+      toast.error('Error al actualizar favoritos');
+    } finally {
+      setFavLoading(false);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!selectedSize) { toast.error('Selecciona una talla primero'); return; }
@@ -169,8 +203,9 @@ export default function ProductDetailPage() {
             </button>
 
             {/* Favourites */}
-            <button className="btn-outline w-full py-3.5 text-sm font-bold mb-8">
-              ♡ Añadir a Favoritos
+            <button onClick={handleToggleFavorite} disabled={favLoading}
+              className={`btn-outline w-full py-3.5 text-sm font-bold mb-8 transition-colors ${isFav ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:border-red-300' : ''}`}>
+              {favLoading ? '...' : isFav ? '❤️ Quitar de Favoritos' : '♡ Añadir a Favoritos'}
             </button>
 
             {/* Benefits */}
