@@ -6,6 +6,9 @@ import MiniProductCard from '../components/MiniProductCard';
 import Footer from '../components/Footer';
 import ProductSlider from '../components/ProductSlider/ProductSlider';
 import toast from 'react-hot-toast';
+import { PiSneakerBold } from "react-icons/pi";
+import { AiFillThunderbolt } from "react-icons/ai";
+import { FaFireFlameCurved } from "react-icons/fa6";
 
 import { FunnelPlus } from 'lucide-react';
 
@@ -103,8 +106,8 @@ export default function HomePage() {
   // ── Filter panel (shared between desktop bar and mobile offcanvas) ─────
   const FilterPanel = () => (
     <div className='flex flex-col gap-6'>
-      
-      
+
+
       <div className="flex gap-6">
 
 
@@ -257,7 +260,7 @@ export default function HomePage() {
             </div>
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-32 text-muted">
-              <p className="text-5xl mb-4">👟</p>
+              <PiSneakerBold className='w-5 h-5' />
               <p className="text-lg mb-2">No hay zapatillas con estos filtros</p>
               <button onClick={clearFilters}
                 className="text-sm text-accent font-semibold bg-transparent border-none cursor-pointer hover:text-accent-hover">
@@ -290,8 +293,8 @@ export default function HomePage() {
         <div className="section-container">
           <div className="flex items-end justify-between mb-6">
             <div>
-              <h2 className="text-[1.75rem] font-black text-primary m-0">En Tendencia 🔥</h2>
-              <p className="text-muted text-sm mt-1">Los drops más calientes del momento.</p>
+              <h2 className="text-[1.75rem] font-black text-primary m-0">En Tendencia <FaFireFlameCurved className='text-3xl text-accent inline-block ' /></h2>
+              <p className="text-muted text-sm mt-1">Los drops mas buscados del momento.</p>
             </div>
             <Link to="/?section=catalogo"
               className="text-accent font-semibold text-sm no-underline hover:text-accent-hover transition-colors">
@@ -319,7 +322,7 @@ export default function HomePage() {
         <div className="section-container">
           <div className="flex items-end justify-between mb-6">
             <div>
-              <h2 className="text-[1.75rem] font-black text-primary m-0">Nuevos Lanzamientos ⚡</h2>
+              <h2 className="text-[1.75rem] font-black text-primary m-0">Nuevos Lanzamientos <AiFillThunderbolt className='text-3xl text-accent inline-block' /></h2>
               <p className="text-muted text-sm mt-1">Recién llegados. No te quedes sin el tuyo.</p>
             </div>
             <Link to="/?section=catalogo"

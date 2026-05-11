@@ -1,29 +1,11 @@
+import BrandMarquee from './BrandMarquee';
+
 export default function Footer() {
   return (
     <footer className="bg-base border-t border-border mt-20">
 
-      {/* Newsletter */}
-      <div className="bg-raised py-14 text-center border-b border-border px-4">
-        <h3 className="text-2xl font-black text-primary mb-2">
-          Suscríbete y Obtén 10% Off
-        </h3>
-        <p className="text-muted text-sm mb-6">
-          Recibe notificaciones de drops exclusivos y ofertas especiales
-        </p>
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="flex gap-3 max-w-md mx-auto"
-        >
-          <input
-            type="email"
-            placeholder="tu@email.com"
-            className="input-field flex-1"
-          />
-          <button type="submit" className="btn-accent px-5 py-2.5 text-sm">
-            Suscribirse
-          </button>
-        </form>
-      </div>
+      {/* Brand marquee */}
+      <BrandMarquee />
 
       {/* Links grid */}
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">

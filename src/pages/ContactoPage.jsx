@@ -1,22 +1,41 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Footer from '../components/Footer';
 import logoImg from '../assets/logo.png';
 import toast from 'react-hot-toast';
+import emailjs from '@emailjs/browser';
+import { FaLocationDot } from "react-icons/fa6";
+import { MdOutlinePermPhoneMsg } from "react-icons/md";
+import { MdOutlineEmail } from "react-icons/md";
+import { AiOutlineClockCircle } from "react-icons/ai";
+
 
 export default function ContactoPage() {
   const [form, setForm] = useState({ nombre: '', email: '', asunto: '', mensaje: '' });
   const [sending, setSending] = useState(false);
+  const formRef = useRef();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      setForm({ nombre: '', email: '', asunto: '', mensaje: '' });
-      toast.success('¡Mensaje enviado! Te responderemos pronto.');
-    }, 1200);
+
+    emailjs
+      .sendForm('service_l4dml7k', 'template_2vxsger', formRef.current, {
+        publicKey: 'bFYJNkU2h6OsLLwcD',
+      })
+      .then(
+        () => {
+          setSending(false);
+          setForm({ nombre: '', email: '', asunto: '', mensaje: '' });
+          toast.success('¡Mensaje enviado! Te responderemos pronto.');
+        },
+        (error) => {
+          setSending(false);
+          console.error('EmailJS error:', error.text);
+          toast.error('Error al enviar el mensaje. Inténtalo de nuevo.');
+        }
+      );
   };
 
   return (
@@ -39,10 +58,11 @@ export default function ContactoPage() {
           <h2 className="text-2xl font-black text-primary mb-6">Información de contacto</h2>
 
           {[
-            { icon: '📍', title: 'Dirección',  lines: ['Calle Gran Vía 42', 'Madrid, 28013, España'] },
-            { icon: '📞', title: 'Teléfono',   lines: ['+34 910 000 000'] },
-            { icon: '✉️', title: 'Email',      lines: ['hola@sneakout.es', 'soporte@sneakout.es'] },
-            { icon: '🕐', title: 'Horario',    lines: ['Lunes – Viernes: 9:00 – 20:00', 'Sábados: 10:00 – 15:00'] },
+            { icon: <FaLocationDot   size={25} />, title: 'Dirección',  lines: ['Calle Gran Vía 42', 'Madrid, 28013, España'] },
+            { icon: <MdOutlinePermPhoneMsg  size={25} />, title: 'Teléfono',   lines: ['+34 910 000 000'] },
+            { icon: <MdOutlineEmail   size={25} />, title: 'Email',      lines: ['sneakout@out.es'] },
+            { icon: <AiOutlineClockCircle  size={25} />, title: 'Horario',    lines: ['Lunes – Viernes: 9:00 – 20:00', 'Sábados: 10:00 – 15:00'] },
+
           ].map((item) => (
             <div key={item.title}
               className="flex gap-4 mb-5 p-5 bg-raised rounded-xl border border-border transition-colors duration-200 hover:border-accent cursor-default">
@@ -73,7 +93,7 @@ export default function ContactoPage() {
           <h2 className="text-2xl font-black text-primary mb-2">Envíanos un mensaje</h2>
           <p className="text-secondary text-sm mb-8">Responderemos en menos de 24 horas en días laborables.</p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="form-label">Nombre *</label>

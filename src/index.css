@@ -133,3 +133,8 @@
     filter: blur(14px);
   }
 }
+
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-25%); }
+}

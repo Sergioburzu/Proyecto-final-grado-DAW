@@ -1,9 +1,25 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 const CartContext = createContext(null);
 
+const CART_STORAGE_KEY = 'sneakout_cart';
+
+function loadCart() {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(loadCart);
+
+  // Sync cart to localStorage on every change
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
 
   // Add item or increment quantity
   const addItem = useCallback((product) => {
@@ -46,3 +62,4 @@ export function CartProvider({ children }) {
 }
 
 export const useCart = () => useContext(CartContext);
+

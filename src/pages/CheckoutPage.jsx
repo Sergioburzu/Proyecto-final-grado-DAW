@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { createOrder } from '../services/api';
 import toast from 'react-hot-toast';
+import { GiPartyPopper } from "react-icons/gi";
 
 function Field({ label, id, children }) {
   return (
@@ -31,7 +32,7 @@ export default function CheckoutPage() {
     try {
       await createOrder({ ...form, total, items: items.map(i => ({ product_id: i.id, quantity: i.quantity, unit_price: i.price })) });
       clearCart();
-      toast.success('¡Pedido realizado con éxito! 🎉');
+      toast.success('¡Pedido realizado con éxito! ', { icon: <GiPartyPopper size={25} /> });
       navigate('/');
     } catch (err) {
       toast.error(err.message || 'Error al procesar el pedido');

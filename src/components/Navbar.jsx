@@ -76,7 +76,7 @@ export default function Navbar({ onCartOpen }) {
           <Link to="/contacto" className="nav-link">Contacto</Link>
           {isAdmin && (
             <Link to="/admin" className="text-accent font-bold no-underline hover:text-accent-hover transition-colors">
-              Admin ⚡
+              Admin 
             </Link>
           )}
         </div>
@@ -180,7 +180,7 @@ export default function Navbar({ onCartOpen }) {
             </Link>
             {isAdmin && (
               <Link to="/admin" className="text-accent font-bold no-underline text-sm py-3 border-b border-border" onClick={closeMobile}>
-                Admin ⚡
+                Admin 
               </Link>
             )}
 

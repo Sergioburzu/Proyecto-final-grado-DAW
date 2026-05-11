@@ -6,6 +6,11 @@ import { useAuth } from '../context/AuthContext';
 import MiniProductCard from '../components/MiniProductCard';
 import Footer from '../components/Footer';
 import toast from 'react-hot-toast';
+import { FiAlertTriangle } from "react-icons/fi";
+import { BsBox2 } from "react-icons/bs";
+import { TfiReload } from "react-icons/tfi";
+import { FaCheck } from "react-icons/fa";
+
 
 function parseSizes(sizeStr) {
   if (!sizeStr) return [];
@@ -67,7 +72,7 @@ export default function ProductDetailPage() {
       } else {
         await addFavorite(id);
         setIsFav(true);
-        toast.success('Añadido a favoritos ❤️');
+        toast.success('Añadido a favoritos');
       }
     } catch (err) {
       toast.error('Error al actualizar favoritos');
@@ -179,7 +184,7 @@ export default function ProductDetailPage() {
             {/* Stock badges */}
             {product.stock <= 5 && product.stock > 0 && (
               <div className="mb-4 px-4 py-2.5 bg-red-900/20 border border-red-900/30 rounded-lg">
-                <p className="text-red-300 text-[0.8rem] font-semibold m-0">⚠️ Solo quedan {product.stock} unidades</p>
+                <p className="text-red-300 text-[0.8rem] font-semibold m-0"><FiAlertTriangle className="mr-2 text-yellow-400 inline-block" /> Solo quedan {product.stock} unidades</p>
               </div>
             )}
             {product.stock === 0 && (
@@ -211,9 +216,9 @@ export default function ProductDetailPage() {
             {/* Benefits */}
             <div className="flex flex-col gap-4 border-t border-border2 pt-6">
               {[
-                { icon: '📦', title: 'Envío Gratis', desc: 'En compras superiores a 150€' },
-                { icon: '🔄', title: 'Devoluciones Gratis', desc: '30 días para cambios y devoluciones' },
-                { icon: '✅', title: 'Garantía Auténtica', desc: '100% originales verificados' },
+                { icon: <BsBox2 className='text-accent' size={25} />, title: 'Envío Gratis', desc: 'En compras superiores a 150€' },
+                { icon: <TfiReload className='text-accent' size={25} />, title: 'Devoluciones Gratis', desc: '30 días para cambios y devoluciones' },
+                { icon: <FaCheck className='text-accent' size={25} />, title: 'Garantía Auténtica', desc: '100% originales verificados' },
               ].map(b => (
                 <div key={b.title} className="flex items-start gap-3.5">
                   <span className="text-xl mt-0.5">{b.icon}</span>
@@ -232,7 +237,7 @@ export default function ProductDetailPage() {
       {related.length > 0 && (
         <div className="border-t border-border2 pt-12 pb-8">
           <div className="max-w-7xl mx-auto px-6">
-            <h2 className="text-[1.75rem] font-black text-primary mb-7">También Te Puede Gustar ⚡</h2>
+            <h2 className="text-[1.75rem] font-black text-primary mb-7">También Te Puede Gustar </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
               {related.map(p => <MiniProductCard key={p.id} product={p} />)}
             </div>
