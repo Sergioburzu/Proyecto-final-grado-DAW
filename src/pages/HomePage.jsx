@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { getProducts } from '../services/api';
 import { useCart } from '../context/CartContext';
@@ -9,8 +9,7 @@ import toast from 'react-hot-toast';
 import { PiSneakerBold } from "react-icons/pi";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { FaFireFlameCurved } from "react-icons/fa6";
-
-import { FunnelPlus } from 'lucide-react';
+import { SlidersHorizontal, X, Check } from 'lucide-react';
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
@@ -21,9 +20,15 @@ export default function HomePage() {
 
   // ── Filter state ──────────────────────────────────────────────────────
   const [selectedBrands, setSelectedBrands] = useState([]);
-  const [priceMax, setPriceMax] = useState(null); // null = sin límite
+  const [priceMax, setPriceMax] = useState(null);
   const [sortBy, setSortBy] = useState('default');
-  const [offcanvasOpen, setOffcanvasOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  // Estado interno del modal (se aplica solo al confirmar)
+  const [draftBrands, setDraftBrands] = useState([]);
+  const [draftPrice, setDraftPrice] = useState(null);
+  const [draftSort, setDraftSort] = useState('default');
+  const rafRef = useRef(null);
 
   const searchQuery = searchParams.get('search') || '';
   const section = searchParams.get('section') || '';
@@ -103,78 +108,34 @@ export default function HomePage() {
     );
   };
 
-  // ── Filter panel (shared between desktop bar and mobile offcanvas) ─────
-  const FilterPanel = () => (
-    <div className='flex flex-col gap-6'>
+  // ── Abrir modal: copiar estado actual a draft ──────────────────────────
+  const openFilter = () => {
+    setDraftBrands([...selectedBrands]);
+    setDraftPrice(priceMax ?? catalogMaxPrice);
+    setDraftSort(sortBy);
+    setFilterOpen(true);
+  };
 
+  // ── Aplicar draft al estado real ──────────────────────────────────────
+  const applyFilters = () => {
+    setSelectedBrands(draftBrands);
+    setPriceMax(draftPrice);
+    setSortBy(draftSort);
+    setFilterOpen(false);
+  };
 
-      <div className="flex gap-6">
+  const toggleDraftBrand = (brand) => {
+    setDraftBrands(prev =>
+      prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
+    );
+  };
 
-
-        {/* Marcas */}
-        <div className="w-1/3">
-          <p className="text-xs font-bold text-muted uppercase tracking-wider mb-3">Marca</p>
-          <div className="flex flex-wrap gap-2">
-            {brands.map(brand => (
-              <button key={brand} onClick={() => toggleBrand(brand)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${selectedBrands.includes(brand)
-                  ? 'bg-accent text-white border-accent'
-                  : 'bg-transparent text-secondary border-border hover:border-accent hover:text-accent'
-                  } `}>
-                {brand}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Precio */}
-        <div className="w-1/2">
-          <div className="flex justify-between items-center mb-2">
-            <p className="text-xs font-bold text-muted uppercase tracking-wider">Precio máx.</p>
-            <span className="text-sm font-black text-accent">{priceMax}€</span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={catalogMaxPrice}
-            step={5}
-            value={priceMax ?? catalogMaxPrice}
-            onChange={e => setPriceMax(Number(e.target.value))}
-            className="w-full accent-[var(--color-accent)] cursor-pointer"
-          />
-          <div className="flex justify-between text-xs text-muted mt-1">
-            <span>0€</span>
-            <span>{catalogMaxPrice}€</span>
-          </div>
-        </div>
-
-        {/* Ordenar */}
-        <div className="w-1/4">
-          <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Ordenar por</p>
-          <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-            className="w-full bg-raised border border-border text-secondary text-sm rounded-lg px-3 py-2 outline-none focus:border-accent cursor-pointer">
-            <option value="default">Relevancia</option>
-            <option value="price_asc">Precio: menor a mayor</option>
-            <option value="price_desc">Precio: mayor a menor</option>
-            <option value="name_az">Nombre: A → Z</option>
-            <option value="name_za">Nombre: Z → A</option>
-          </select>
-        </div>
-
-      </div>
-      {/* Limpiar */}
-      <div className="flex items-center justify-between mb-6 mt-6 w-full">
-        {activeFilterCount > 0 && (
-          <button onClick={clearFilters}
-            className="text-xs text-accent font-semibold bg-transparent border-none cursor-pointer hover:text-accent-hover transition-colors self-start">
-            ✕ Limpiar filtros
-          </button>
-        )}
-      </div>
-
-    </div>
-
-  );
+  // Slider fluido con requestAnimationFrame
+  const handleSliderChange = useCallback((e) => {
+    const val = Number(e.target.value);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => setDraftPrice(val));
+  }, []);
 
   const trending = products.slice(0, 4);
   const newReleases = products.slice(2, 6);
@@ -202,51 +163,158 @@ export default function HomePage() {
             </button>
           </div>
 
-          {/* ── Desktop: horizontal filter bar ── */}
+          {/* ── Botón Filtros (desktop + móvil) ── */}
           {!loading && products.length > 0 && (
-            <div className="hidden sm:block bg-raised border border-border rounded-2xl px-6 py-4 mb-8">
-              <FilterPanel />
-            </div>
-          )}
-
-          {/* ── Mobile: floating filter button ── */}
-          {!loading && products.length > 0 && (
-            <div className="sm:hidden fixed bottom-6 right-6 z-40">
-              <button onClick={() => setOffcanvasOpen(true)}
-                className="flex items-center gap-2 p-3 bg-accent text-white rounded-full shadow-xl font-bold">
-                <FunnelPlus className='w-5 h-5' />
+            <div className="flex items-center gap-3 mb-8">
+              <button
+                id="open-filter-modal"
+                onClick={openFilter}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-raised text-secondary text-sm font-semibold cursor-pointer hover:border-accent hover:text-accent transition-all duration-200"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                Filtros
                 {activeFilterCount > 0 && (
-                  <span className="bg-white text-accent text-xs font-black rounded-full w-5 h-5 flex items-center justify-center">
+                  <span
+                    className="ml-1 flex items-center justify-center w-5 h-5 rounded-full text-white text-[0.65rem] font-black"
+                    style={{ background: 'var(--color-accent)' }}
+                  >
                     {activeFilterCount}
                   </span>
                 )}
               </button>
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="text-xs text-muted bg-transparent border-none cursor-pointer hover:text-accent transition-colors"
+                >
+                  ✕ Limpiar filtros
+                </button>
+              )}
             </div>
           )}
 
-          {/* ── Mobile offcanvas ── */}
-          {offcanvasOpen && (
+          {/* ── Modal de filtros ── */}
+          {filterOpen && (
             <>
               {/* Backdrop */}
-              <div className="sm:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-                onClick={() => setOffcanvasOpen(false)} />
+              <div
+                className="fixed inset-0 z-50"
+                style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+                onClick={() => setFilterOpen(false)}
+              />
               {/* Panel */}
-              <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-base rounded-t-3xl p-6 shadow-2xl"
-                style={{ maxHeight: '85vh', overflowY: 'auto' }}>
+              <div
+                className="fixed z-50 top-1/2 left-1/2 w-[92vw] max-w-lg"
+                style={{
+                  transform: 'translate(-50%, -50%)',
+                  background: 'var(--color-surface, #fff)',
+                  borderRadius: '1.25rem',
+                  boxShadow: '0 24px 64px rgba(0,0,0,0.35)',
+                  padding: '2rem',
+                }}
+              >
+                {/* Cabecera del modal */}
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-black text-primary">Filtros</h3>
-                  <button onClick={() => setOffcanvasOpen(false)}
-                    className="p-2 rounded-full bg-raised border border-border text-muted cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                  <h3 className="text-lg font-black text-primary m-0">Filtros</h3>
+                  <button
+                    onClick={() => setFilterOpen(false)}
+                    className="p-1.5 rounded-lg border border-border bg-raised text-muted cursor-pointer hover:text-primary transition-colors"
+                  >
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
-                <FilterPanel />
-                <button onClick={() => setOffcanvasOpen(false)}
-                  className="mt-6 w-full py-3 bg-accent text-white rounded-xl font-bold text-sm">
-                  Ver {filteredProducts.length} resultado{filteredProducts.length !== 1 ? 's' : ''}
-                </button>
+
+                {/* ── Marcas ── */}
+                <p className="text-[0.7rem] font-bold text-muted uppercase tracking-widest mb-3">Marca</p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {brands.map(brand => {
+                    const active = draftBrands.includes(brand);
+                    return (
+                      <button
+                        key={brand}
+                        onClick={() => toggleDraftBrand(brand)}
+                        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all duration-150"
+                        style={{
+                          background: active ? 'var(--color-primary)' : 'var(--color-raised)',
+                          color: active ? '#fff' : 'var(--color-secondary)',
+                          border: active ? '1.5px solid var(--color-primary)' : '1.5px solid var(--color-border)',
+                        }}
+                      >
+                        {active && <Check className="w-3 h-3" />}
+                        {brand}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* ── Precio máximo ── */}
+                <p className="text-[0.7rem] font-bold text-muted uppercase tracking-widest mb-2">Precio máximo</p>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs text-muted">0€</span>
+                  <span
+                    className="text-sm font-black px-2 py-0.5 rounded-lg"
+                    style={{ color: 'var(--color-accent)', background: 'var(--color-raised)' }}
+                  >
+                    {draftPrice}€
+                  </span>
+                  <span className="text-xs text-muted">{catalogMaxPrice}€</span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={catalogMaxPrice}
+                  step={1}
+                  value={draftPrice ?? catalogMaxPrice}
+                  onChange={handleSliderChange}
+                  className="w-full mb-6 cursor-pointer"
+                  style={{ accentColor: 'var(--color-accent)' }}
+                />
+
+                {/* ── Ordenar por ── */}
+                <p className="text-[0.7rem] font-bold text-muted uppercase tracking-widest mb-2">Ordenar por</p>
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {[
+                    { value: 'default',    label: 'Relevancia' },
+                    { value: 'price_asc',  label: 'Precio ↑' },
+                    { value: 'price_desc', label: 'Precio ↓' },
+                    { value: 'name_az',    label: 'A → Z' },
+                    { value: 'name_za',    label: 'Z → A' },
+                  ].map(opt => {
+                    const active = draftSort === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => setDraftSort(opt.value)}
+                        className="px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all duration-150"
+                        style={{
+                          background: active ? 'var(--color-accent)' : 'var(--color-raised)',
+                          color: active ? '#fff' : 'var(--color-secondary)',
+                          border: active ? '1.5px solid var(--color-accent)' : '1.5px solid var(--color-border)',
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* ── Acciones ── */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => { setDraftBrands([]); setDraftPrice(catalogMaxPrice); setDraftSort('default'); }}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-border bg-transparent text-muted cursor-pointer hover:text-primary hover:border-primary transition-all"
+                  >
+                    Limpiar
+                  </button>
+                  <button
+                    id="apply-filters-btn"
+                    onClick={applyFilters}
+                    className="flex-1 py-2.5 rounded-xl text-sm font-black text-white cursor-pointer transition-all"
+                    style={{ background: 'var(--color-accent)' }}
+                  >
+                    Ver {filteredProducts.length} resultado{filteredProducts.length !== 1 ? 's' : ''}
+                  </button>
+                </div>
               </div>
             </>
           )}

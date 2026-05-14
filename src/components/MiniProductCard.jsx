@@ -1,7 +1,16 @@
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+
+const STORAGE_BUCKET = 'Images';
+const CATALOG_IMAGE  = '0.png';
 
 export default function MiniProductCard({ product }) {
   const navigate = useNavigate();
+
+  const { data: imgData } = supabase.storage
+    .from(STORAGE_BUCKET)
+    .getPublicUrl(`${product.image_url}/${CATALOG_IMAGE}`);
+  const imageUrl = imgData?.publicUrl;
 
   return (
     <div
@@ -23,7 +32,7 @@ export default function MiniProductCard({ product }) {
         )}
 
         <img
-          src={product.image_url || 'https://via.placeholder.com/300'}
+          src={imageUrl}
           alt={product.name}
           className="w-full h-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.06]"
         />

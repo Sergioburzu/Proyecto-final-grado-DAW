@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProduct, getProducts, checkIsFavorite, addFavorite, removeFavorite } from '../services/api';
+import { supabase } from '../supabaseClient';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import MiniProductCard from '../components/MiniProductCard';
@@ -10,6 +11,7 @@ import { FiAlertTriangle } from "react-icons/fi";
 import { BsBox2 } from "react-icons/bs";
 import { TfiReload } from "react-icons/tfi";
 import { FaCheck } from "react-icons/fa";
+//import { HiOutlineShoppingCart } from "react-icons/hi";
 
 
 function parseSizes(sizeStr) {
@@ -17,11 +19,8 @@ function parseSizes(sizeStr) {
   return sizeStr.split(',').map(s => s.trim()).filter(Boolean);
 }
 
-const thumbStyles = [
-  {},
-  { filter: 'brightness(0.7)' },
-  { filter: 'brightness(1.2) saturate(0.8)' },
-];
+const STORAGE_BUCKET  = 'Images';
+const IMAGE_COUNT     = 3;
 
 export default function ProductDetailPage() {
   const { id }      = useParams();
@@ -107,6 +106,13 @@ export default function ProductDetailPage() {
   if (!product) return null;
   const sizes = parseSizes(product.size);
 
+  const images = Array.from({ length: IMAGE_COUNT }, (_, i) => {
+    const { data } = supabase.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(`${product.image_url}/${i}.png`);
+    return data.publicUrl;
+  });
+
   return (
     <div className="bg-base min-h-screen">
 
@@ -125,19 +131,20 @@ export default function ProductDetailPage() {
           {/* Images */}
           <div>
             <div className="bg-raised rounded-2xl overflow-hidden aspect-square mb-4 border border-border flex items-center justify-center">
-              {/* filter is dynamic (activeThumb) so style is needed */}
-              <img src={product.image_url || 'https://via.placeholder.com/600'} alt={product.name}
-                className="w-full h-full object-contain p-6 transition-[filter] duration-300"
-                style={thumbStyles[activeThumb]} />
+              <img
+                src={images[activeThumb]}
+                alt={product.name}
+                className="w-full h-full object-contain p-6 transition-opacity duration-300"
+              />
             </div>
             {/* Thumbnails */}
             <div className="grid grid-cols-3 gap-3">
-              {thumbStyles.map((style, i) => (
+              {images.map((url, i) => (
                 <button key={i} onClick={() => setThumb(i)}
                   className="p-0 border-none cursor-pointer rounded-xl overflow-hidden aspect-square bg-raised flex items-center justify-center transition-all duration-100"
                   style={{ outline: activeThumb === i ? '2px solid var(--color-accent)' : '2px solid transparent', outlineOffset: '2px' }}>
-                  <img src={product.image_url || 'https://via.placeholder.com/200'} alt={`Vista ${i + 1}`}
-                    className="w-full h-full object-contain p-2" style={style} />
+                  <img src={url} alt={`Vista ${i + 1}`}
+                    className="w-full h-full object-contain p-2" />
                 </button>
               ))}
             </div>

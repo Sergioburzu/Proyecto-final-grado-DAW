@@ -11,6 +11,7 @@ function loadCart() {
   } catch {
     return [];
   }
+  
 }
 
 export function CartProvider({ children }) {
