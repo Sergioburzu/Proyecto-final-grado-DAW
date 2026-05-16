@@ -94,7 +94,7 @@ export default function RegisterPage() {
 
           <button type="submit" disabled={loading}
             className={`btn-accent w-full py-3.5 text-base mb-6 ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}>
-            {loading ? 'Creando cuenta...' : 'Crear Cuenta ⚡'}
+            {loading ? 'Creando cuenta...' : 'Crear Cuenta '}
           </button>
 
           {/* Divider */}

@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { BASE_URL } from '../services/api';
 import toast from 'react-hot-toast';
+import { supabase } from '../supabaseClient';
+
+const STORAGE_BUCKET = 'Images';
+const CATALOG_IMAGE  = '0.png';
 
 export default function CartDrawer({ isOpen, onClose }) {
   const { items, addItem, removeItem, removeProduct, clearCart, total } = useCart();
@@ -64,40 +68,47 @@ export default function CartDrawer({ isOpen, onClose }) {
               <p className="text-sm text-muted">Tu carrito está vacío</p>
             </div>
           ) : (
-            items.map((item) => (
-              <div key={item.id}
-                className="flex gap-3 bg-surface rounded-xl p-3 border border-border transition-colors duration-200 hover:border-accent group">
-                <img
-                  src={item.image_url ? `${BASE_URL}${item.image_url}` : 'https://via.placeholder.com/80'}
-                  alt={item.name}
-                  className="w-16 h-16 rounded-lg object-cover shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-primary text-sm truncate">{item.name}</p>
-                  <p className="text-xs text-muted">{item.brand}</p>
-                  <p className="text-accent font-bold text-sm mt-1">
-                    {(item.price * item.quantity).toFixed(2)}€
-                  </p>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <button onClick={() => addItem(item)}
-                    className="w-6 h-6 rounded-full bg-accent text-white border-none text-sm cursor-pointer font-bold flex items-center justify-center transition-all duration-200 hover:bg-accent-hover">
-                    +
+            items.map((item) => {
+              const { data: imgData } = supabase.storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(`${item.image_url}/${CATALOG_IMAGE}`);
+              const imageUrl = imgData?.publicUrl;
+
+              return (
+                <div key={item.id}
+                  className="flex gap-3 bg-surface rounded-xl p-3 border border-border transition-colors duration-200 hover:border-accent group">
+                  <img
+                    src={item.image_url ? imageUrl : 'https://via.placeholder.com/80'}
+                    alt={item.name}
+                    className="w-16 h-16 rounded-lg object-cover shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-primary text-sm truncate">{item.name}</p>
+                    <p className="text-xs text-muted">{item.brand}</p>
+                    <p className="text-accent font-bold text-sm mt-1">
+                      {(item.price * item.quantity).toFixed(2)}€
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <button onClick={() => addItem(item)}
+                      className="w-6 h-6 rounded-full bg-accent text-white border-none text-sm cursor-pointer font-bold flex items-center justify-center transition-all duration-200 hover:bg-accent-hover">
+                      +
+                    </button>
+                    <span className="text-sm font-bold text-primary">{item.quantity}</span>
+                    <button onClick={() => removeItem(item.id)}
+                      className="w-6 h-6 rounded-full bg-raised text-secondary border border-border text-sm cursor-pointer flex items-center justify-center transition-all duration-200 hover:border-accent hover:text-accent">
+                      −
+                    </button>
+                  </div>
+                  <button onClick={() => removeProduct(item.id)}
+                    className="self-start p-1 bg-transparent border-none text-[#444] cursor-pointer transition-colors duration-200 hover:text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                   </button>
-                  <span className="text-sm font-bold text-primary">{item.quantity}</span>
-                  <button onClick={() => removeItem(item.id)}
-                    className="w-6 h-6 rounded-full bg-raised text-secondary border border-border text-sm cursor-pointer flex items-center justify-center transition-all duration-200 hover:border-accent hover:text-accent">
-                    −
-                  </button>
                 </div>
-                <button onClick={() => removeProduct(item.id)}
-                  className="self-start p-1 bg-transparent border-none text-[#444] cursor-pointer transition-colors duration-200 hover:text-red-500">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 

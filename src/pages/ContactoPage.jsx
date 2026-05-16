@@ -58,7 +58,7 @@ export default function ContactoPage() {
           <h2 className="text-2xl font-black text-primary mb-6">Información de contacto</h2>
 
           {[
-            { icon: <FaLocationDot   size={25} />, title: 'Dirección',  lines: ['Calle Gran Vía 42', 'Madrid, 28013, España'] },
+            { icon: <FaLocationDot   size={25} />, title: 'Dirección',  lines: ['Calle de Castaños 16', 'Alicante, 03690, España'] },
             { icon: <MdOutlinePermPhoneMsg  size={25} />, title: 'Teléfono',   lines: ['+34 910 000 000'] },
             { icon: <MdOutlineEmail   size={25} />, title: 'Email',      lines: ['sneakout@out.es'] },
             { icon: <AiOutlineClockCircle  size={25} />, title: 'Horario',    lines: ['Lunes – Viernes: 9:00 – 20:00', 'Sábados: 10:00 – 15:00'] },

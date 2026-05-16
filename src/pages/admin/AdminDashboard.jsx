@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '../../services/api';
 import toast from 'react-hot-toast';
+import { supabase } from '../../supabaseClient';
+
+const STORAGE_BUCKET = 'Images';
+const CATALOG_IMAGE  = '0.png';
 
 import { CirclePlus, Trash2, Package2, Tag, AlertCircle, Search, FilePenLine, X } from 'lucide-react';
 
@@ -127,7 +131,7 @@ function ProductModal({ editId, form, onChange, onSubmit, onClose, saving }) {
           {/* Preview de imagen si hay URL */}
           {form.image_url && (
             <div className="mt-4 p-3 rounded-xl bg-raised border border-border flex items-center gap-3">
-              <img src={form.image_url} alt="Preview" className="w-16 h-16 rounded-lg object-contain bg-card border border-border" onError={(e) => { e.target.style.display = 'none'; }} />
+              <img src={supabase.storage.from(STORAGE_BUCKET).getPublicUrl(`${form.image_url}/${CATALOG_IMAGE}`).data.publicUrl} alt="Preview" className="w-16 h-16 rounded-lg object-contain bg-card border border-border" onError={(e) => { e.target.style.display = 'none'; }} />
               <p className="text-xs text-muted">Vista previa de la imagen</p>
             </div>
           )}
@@ -244,7 +248,8 @@ export default function AdminDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
             <div className="inline-flex items-center gap-2 bg-accent/10 text-accent text-xs font-black px-3 py-1 rounded-full mb-3 uppercase tracking-widest">
-              ⚡ Panel de Administración
+              
+               Panel de Administración
             </div>
             <h1 className="text-4xl font-black text-primary leading-tight">Gestión del Catálogo</h1>
             <p className="text-secondary mt-1 text-sm">
@@ -322,7 +327,7 @@ export default function AdminDashboard() {
                         <div className="flex items-center gap-3">
                           <div className="w-11 h-11 rounded-xl bg-raised border border-border overflow-hidden shrink-0 flex items-center justify-center">
                             {product.image_url ? (
-                              <img src={product.image_url} alt={product.name}
+                              <img src={supabase.storage.from(STORAGE_BUCKET).getPublicUrl(`${product.image_url}/${CATALOG_IMAGE}`).data.publicUrl} alt={product.name}
                                 className="w-full h-full object-contain"
                                 onError={(e) => { e.target.style.display = 'none'; }}
                               />

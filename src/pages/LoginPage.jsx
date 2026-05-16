@@ -97,7 +97,7 @@ export default function LoginPage() {
           {/* Submit */}
           <button type="submit" disabled={loading}
             className={`btn-accent w-full py-3.5 text-base mb-6 ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}>
-            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión ⚡'}
+            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión '}
           </button>
 
           {/* Divider */}
