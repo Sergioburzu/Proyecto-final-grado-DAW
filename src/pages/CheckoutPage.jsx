@@ -5,6 +5,7 @@ import { createOrder } from '../services/api';
 import toast from 'react-hot-toast';
 import { GiPartyPopper } from "react-icons/gi";
 import { supabase } from '../supabaseClient';
+import { ShoppingCart } from 'lucide-react';
 
 const STORAGE_BUCKET = 'Images';
 const CATALOG_IMAGE = '0.png';
@@ -46,10 +47,10 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-base flex flex-col items-center justify-center text-muted gap-4">
-        <p className="text-6xl">🛒</p>
+      <div className="min-h-screen bg-base flex flex-col items-center justify-center text-muted gap-2 text-center p-6">
+        <ShoppingCart className="w-16 h-16 text-muted/60 mb-2" />
         <p className="text-xl font-semibold text-secondary">Tu carrito está vacío</p>
-        <button onClick={() => navigate('/')} className="btn-accent px-6 py-3 text-sm mt-2">
+        <button onClick={() => navigate('/')} className="btn-accent px-6 py-3 text-sm mt-4">
           Ver catálogo →
         </button>
       </div>

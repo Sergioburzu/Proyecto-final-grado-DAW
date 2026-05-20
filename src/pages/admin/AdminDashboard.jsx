@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { supabase } from '../../supabaseClient';
 
 const STORAGE_BUCKET = 'Images';
-const CATALOG_IMAGE  = '0.png';
+const CATALOG_IMAGE = '0.png';
 
 import { CirclePlus, Trash2, Package2, Tag, AlertCircle, Search, FilePenLine, X } from 'lucide-react';
 
@@ -248,8 +248,8 @@ export default function AdminDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
             <div className="inline-flex items-center gap-2 bg-accent/10 text-accent text-xs font-black px-3 py-1 rounded-full mb-3 uppercase tracking-widest">
-              
-               Panel de Administración
+
+              Panel de Administración
             </div>
             <h1 className="text-4xl font-black text-primary leading-tight">Gestión del Catálogo</h1>
             <p className="text-secondary mt-1 text-sm">
@@ -295,7 +295,7 @@ export default function AdminDashboard() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="card p-16 text-center">
-            <p className="text-5xl mb-4">👟</p>
+            <Package2 className="mx-auto w-16 h-16 text-muted/60 mb-4" />
             <p className="text-xl font-bold text-primary mb-1">
               {search ? 'Sin resultados' : 'Catálogo vacío'}
             </p>
@@ -352,13 +352,24 @@ export default function AdminDashboard() {
 
                       {/* Stock */}
                       <td className="px-6 py-4 hidden sm:table-cell">
-                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${product.stock === 0
-                          ? 'bg-red-100 text-red-700'
-                          : product.stock <= 5
-                            ? 'bg-orange-100 text-orange-700'
-                            : 'bg-green-100 text-green-700'
-                          }`}>
-                          {product.stock === 0 ? '⚠ Sin stock' : `${product.stock} uds`}
+                        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${
+                          product.stock === 0
+                            ? 'bg-red-100 text-red-700'
+                            : product.stock <= 5
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-green-100 text-green-700'
+                        }`}>
+                          {product.stock === 0 ? (
+                            <>
+                              <AlertCircle className="w-3.5 h-3.5" /> Sin stock
+                            </>
+                          ) : product.stock <= 5 ? (
+                            <>
+                              <AlertCircle className="w-3.5 h-3.5" /> {product.stock} uds
+                            </>
+                          ) : (
+                            `${product.stock} uds`
+                          )}
                         </span>
                       </td>
 

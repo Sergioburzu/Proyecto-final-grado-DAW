@@ -11,7 +11,10 @@ import { FiAlertTriangle } from "react-icons/fi";
 import { BsBox2 } from "react-icons/bs";
 import { TfiReload } from "react-icons/tfi";
 import { FaCheck } from "react-icons/fa";
-//import { HiOutlineShoppingCart } from "react-icons/hi";
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import { HiOutlineShoppingCart } from "react-icons/hi";
+import { Heart } from 'lucide-react';
 
 
 function parseSizes(sizeStr) {
@@ -43,8 +46,46 @@ export default function ProductDetailPage() {
       setLoading(true);
       try {
         const [prodRes, allRes] = await Promise.all([getProduct(id), getProducts()]);
-        setProduct(prodRes.data);
-        setRelated(allRes.data.filter(p => String(p.id) !== String(id)).slice(0, 4));
+        const currentProduct = prodRes.data;
+        const relatedData = allRes.data.filter(p => String(p.id) !== String(id)).slice(0, 4);
+
+        // Preload detail images and related product thumbnail images
+        const preloadUrls = [];
+        if (currentProduct) {
+          for (let i = 0; i < IMAGE_COUNT; i++) {
+            const { data } = supabase.storage
+              .from(STORAGE_BUCKET)
+              .getPublicUrl(`${currentProduct.image_url}/${i}.png`);
+            if (data?.publicUrl) preloadUrls.push(data.publicUrl);
+          }
+        }
+        relatedData.forEach(p => {
+          const { data } = supabase.storage
+            .from(STORAGE_BUCKET)
+            .getPublicUrl(`${p.image_url}/0.png`);
+          if (data?.publicUrl) preloadUrls.push(data.publicUrl);
+        });
+
+        const preloadPromises = preloadUrls.map(url => {
+          return new Promise((resolve) => {
+            const img = new Image();
+            img.src = url;
+            img.onload = resolve;
+            img.onerror = resolve; // resolve anyway to avoid hanging
+          });
+        });
+
+        // Wait for all image assets to load (max 3s timeout) and ensure a minimum 800ms display for a smooth skeleton transition
+        await Promise.all([
+          Promise.race([
+            Promise.all(preloadPromises),
+            new Promise(resolve => setTimeout(resolve, 3000))
+          ]),
+          new Promise(resolve => setTimeout(resolve, 800))
+        ]);
+
+        setProduct(currentProduct);
+        setRelated(relatedData);
         
         if (user) {
           const fav = await checkIsFavorite(id);
@@ -52,8 +93,13 @@ export default function ProductDetailPage() {
         } else {
           setIsFav(false);
         }
-      } catch { toast.error('Producto no encontrado'); navigate('/'); }
-      finally { setLoading(false); }
+      } catch (err) {
+        console.error(err);
+        toast.error('Producto no encontrado');
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
     })();
   }, [id, user]);
 
@@ -83,23 +129,35 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     if (!selectedSize) { toast.error('Selecciona una talla primero'); return; }
     addItem({ ...product, selectedSize });
-    toast.success(`${product.name} (talla ${selectedSize}) añadido al carrito 🛒`);
+    toast.success(`${product.name} (talla ${selectedSize}) añadido al carrito`);
   };
 
   if (loading) {
     return (
-      <div className="bg-base min-h-screen">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-            <div className="bg-raised rounded-2xl aspect-square animate-pulse border border-border" />
-            <div className="flex flex-col gap-4">
-              {[80, 60, 40, 100, 50, 50].map((w, i) => (
-                <div key={i} className="h-6 bg-raised rounded-lg animate-pulse" style={{ width: `${w}%` }} />
-              ))}
+      <SkeletonTheme baseColor="var(--color-raised)" highlightColor="var(--color-base)">
+        <div className="bg-base min-h-screen">
+          <div className="max-w-7xl mx-auto px-6 py-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+              {/* Product Image skeleton */}
+              <div className="relative rounded-2xl aspect-square overflow-hidden border border-border flex items-center justify-center">
+                <Skeleton height="100%" containerClassName="w-full h-full block leading-none" />
+              </div>
+              {/* Product Info skeleton */}
+              <div className="flex flex-col gap-4 pt-2">
+                <Skeleton height={14} width="15%" borderRadius="0.375rem" />
+                <Skeleton height={32} width="60%" borderRadius="0.375rem" />
+                <Skeleton height={28} width="25%" borderRadius="0.375rem" />
+                <div className="my-2">
+                  <Skeleton count={3} height={16} width="100%" borderRadius="0.375rem" />
+                </div>
+                <div className="mt-4">
+                  <Skeleton height={48} width="100%" borderRadius="0.75rem" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </SkeletonTheme>
     );
   }
 
@@ -210,14 +268,21 @@ export default function ProductDetailPage() {
                 opacity: product.stock === 0 ? 0.5 : 1,
                 cursor: product.stock === 0 ? 'not-allowed' : 'pointer',
               }}>
-              🛒 Añadir al Carrito
+              <HiOutlineShoppingCart className="w-5 h-5" /> Añadir al Carrito
               {selectedSize && <span className="font-normal text-[0.85rem] opacity-85">— Talla {selectedSize}</span>}
             </button>
 
             {/* Favourites */}
             <button onClick={handleToggleFavorite} disabled={favLoading}
-              className={`btn-outline w-full py-3.5 text-sm font-bold mb-8 transition-colors ${isFav ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:border-red-300' : ''}`}>
-              {favLoading ? '...' : isFav ? '❤️ Quitar de Favoritos' : '♡ Añadir a Favoritos'}
+              className={`btn-outline w-full py-3.5 text-sm font-bold mb-8 transition-colors flex items-center justify-center gap-2 ${isFav ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:border-red-300' : ''}`}>
+              {favLoading ? (
+                '...'
+              ) : (
+                <>
+                  <Heart className={`w-5 h-5 transition-colors duration-200 ${isFav ? 'fill-red-600 text-red-600' : 'text-current'}`} />
+                  {isFav ? 'Quitar de Favoritos' : 'Añadir a Favoritos'}
+                </>
+              )}
             </button>
 
             {/* Benefits */}

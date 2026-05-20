@@ -1,5 +1,6 @@
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
+import { AlertTriangle, AlertCircle } from 'lucide-react';
 
 export default function ProductCard({ product }) {
   const { addItem } = useCart();
@@ -48,10 +49,14 @@ export default function ProductCard({ product }) {
 
         {/* Stock indicator */}
         {product.stock <= 5 && product.stock > 0 && (
-          <p className="mt-2 text-xs text-amber-400 font-medium">⚠ Solo quedan {product.stock} unidades</p>
+          <p className="mt-2 text-xs text-amber-400 font-medium flex items-center gap-1">
+            <AlertTriangle className="w-3.5 h-3.5" /> Solo quedan {product.stock} unidades
+          </p>
         )}
         {product.stock === 0 && (
-          <p className="mt-2 text-xs text-red-400 font-medium">❌ Sin stock</p>
+          <p className="mt-2 text-xs text-red-400 font-medium flex items-center gap-1">
+            <AlertCircle className="w-3.5 h-3.5" /> Sin stock
+          </p>
         )}
       </div>
     </div>

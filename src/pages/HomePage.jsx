@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { getProducts } from '../services/api';
 import { useCart } from '../context/CartContext';
 import MiniProductCard from '../components/MiniProductCard';
+import MiniProductCardSkeleton from '../components/MiniProductCardSkeleton';
 import Footer from '../components/Footer';
 import ProductSlider from '../components/ProductSlider/ProductSlider';
 import toast from 'react-hot-toast';
@@ -10,6 +11,7 @@ import { PiSneakerBold } from "react-icons/pi";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { FaFireFlameCurved } from "react-icons/fa6";
 import { SlidersHorizontal, X, Check } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
@@ -51,7 +53,34 @@ export default function HomePage() {
       const params = {};
       if (searchQuery) params.search = searchQuery;
       const res = await getProducts(params);
-      setProducts(res.data);
+      const productsData = res.data || [];
+
+      // Preload images to ensure all sneakers render simultaneously
+      const preloadPromises = productsData.map(product => {
+        const { data: imgData } = supabase.storage
+          .from('Images')
+          .getPublicUrl(`${product.image_url}/0.png`);
+        const imageUrl = imgData?.publicUrl;
+
+        if (!imageUrl) return Promise.resolve();
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = imageUrl;
+          img.onload = resolve;
+          img.onerror = resolve; // resolve anyway to avoid blocking
+        });
+      });
+
+      // Wait for all image assets to load (max 3s timeout) and ensure a minimum 800ms display for a smooth skeleton transition
+      await Promise.all([
+        Promise.race([
+          Promise.all(preloadPromises),
+          new Promise(resolve => setTimeout(resolve, 3000))
+        ]),
+        new Promise(resolve => setTimeout(resolve, 800))
+      ]);
+
+      setProducts(productsData);
     } catch (err) {
       console.error(err);
     } finally {
@@ -323,7 +352,7 @@ export default function HomePage() {
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="aspect-square bg-raised rounded-xl animate-pulse" />
+                <MiniProductCardSkeleton key={i} />
               ))}
             </div>
           ) : filteredProducts.length === 0 ? (
@@ -372,7 +401,9 @@ export default function HomePage() {
 
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => <div key={i} className="aspect-square bg-raised rounded-xl animate-pulse" />)}
+              {[...Array(4)].map((_, i) => (
+                <MiniProductCardSkeleton key={i} />
+              ))}
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
@@ -401,7 +432,9 @@ export default function HomePage() {
 
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => <div key={i} className="aspect-square bg-raised rounded-xl animate-pulse" />)}
+              {[...Array(4)].map((_, i) => (
+                <MiniProductCardSkeleton key={i} />
+              ))}
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
