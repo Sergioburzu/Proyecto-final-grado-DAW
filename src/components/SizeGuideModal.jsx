@@ -39,8 +39,6 @@ function getConversion(euroSize) {
 }
 
 export default function SizeGuideModal({ isOpen, onClose, productSizes = [] }) {
-  const [showOnlyAvailable, setShowOnlyAvailable] = useState(false);
-
   // Normalizamos las tallas de entrada
   const normalizedProductSizes = useMemo(() => {
     return productSizes.map(s => String(s).trim().replace(',', '.'));
@@ -65,14 +63,6 @@ export default function SizeGuideModal({ isOpen, onClose, productSizes = [] }) {
       return { ...conv, isAvailable };
     });
   }, [normalizedProductSizes]);
-
-  // Filtramos si el toggle está activo
-  const filteredData = useMemo(() => {
-    if (showOnlyAvailable) {
-      return sizesTableData.filter(d => d.isAvailable);
-    }
-    return sizesTableData;
-  }, [sizesTableData, showOnlyAvailable]);
 
   if (!isOpen) return null;
 
@@ -100,29 +90,7 @@ export default function SizeGuideModal({ isOpen, onClose, productSizes = [] }) {
         </div>
 
         {/* Contenido con scroll */}
-        <div className="p-6 overflow-y-auto flex-1 space-y-6">
-          {/* Panel de control de disponibilidad */}
-          {normalizedProductSizes.length > 0 && (
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-raised rounded-2xl border border-border gap-3">
-              <div>
-                <p className="text-sm font-bold text-primary">Tallas de esta zapatilla</p>
-                <p className="text-xs text-secondary mt-0.5">
-                  Disponibles: <span className="font-semibold text-accent">{productSizes.join(', ')}</span>
-                </p>
-              </div>
-              <button
-                onClick={() => setShowOnlyAvailable(!showOnlyAvailable)}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                  showOnlyAvailable 
-                    ? 'bg-accent text-white border-none' 
-                    : 'bg-surface border border-border text-secondary hover:border-accent hover:text-accent'
-                }`}
-              >
-                {showOnlyAvailable ? 'Mostrar todas las tallas' : 'Ver solo disponibles'}
-              </button>
-            </div>
-          )}
-
+        <div className="p-6 overflow-y-auto flex-1">
           {/* Tabla de tallas */}
           <div className="border border-border rounded-2xl overflow-hidden bg-surface">
             <table className="w-full text-left border-collapse">
@@ -137,7 +105,7 @@ export default function SizeGuideModal({ isOpen, onClose, productSizes = [] }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filteredData.map((row) => (
+                {sizesTableData.map((row) => (
                   <tr 
                     key={row.euro} 
                     className={`transition-colors duration-150 ${
@@ -164,18 +132,6 @@ export default function SizeGuideModal({ isOpen, onClose, productSizes = [] }) {
                 ))}
               </tbody>
             </table>
-          </div>
-
-          {/* Cómo medir el pie */}
-          <div className="p-5 rounded-2xl border border-border bg-raised/20 space-y-2">
-            <h4 className="text-sm font-black text-primary">¿Cómo saber tu talla de pie?</h4>
-            <ol className="text-xs text-secondary list-decimal pl-4 space-y-1.5 leading-relaxed">
-              <li>Coloca una hoja de papel en el suelo pegada a la pared.</li>
-              <li>Pisa descalzo la hoja con el talón apoyado firmemente contra la pared.</li>
-              <li>Pide a alguien (o hazlo tú mismo) que marque la punta del dedo más largo con un lápiz.</li>
-              <li>Mide la distancia de la marca al borde de la hoja en centímetros (CM).</li>
-              <li>Compara tu medida en centímetros con nuestra columna de **CM** arriba para encontrar tu talla perfecta.</li>
-            </ol>
           </div>
         </div>
       </div>
