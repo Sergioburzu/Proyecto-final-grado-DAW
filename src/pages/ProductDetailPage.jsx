@@ -15,7 +15,7 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { HiOutlineShoppingCart } from "react-icons/hi";
 import { Heart } from 'lucide-react';
-
+import SizeGuideModal from '../components/SizeGuideModal';
 
 function parseSizes(sizeStr) {
   if (!sizeStr) return [];
@@ -38,6 +38,7 @@ export default function ProductDetailPage() {
   const [activeThumb, setThumb]     = useState(0);
   const [isFav, setIsFav]           = useState(false);
   const [favLoading, setFavLoading] = useState(false);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   useEffect(() => {
     setSelected(null); setThumb(0);
@@ -222,7 +223,10 @@ export default function ProductDetailPage() {
             <div className="mb-6">
               <div className="flex justify-between items-center mb-4">
                 <p className="text-primary font-bold text-sm">Selecciona tu talla</p>
-                <button className="text-accent text-[0.8rem] bg-transparent border-none cursor-pointer underline">
+                <button 
+                  onClick={() => setShowSizeGuide(true)}
+                  className="text-accent text-[0.8rem] bg-transparent border-none cursor-pointer underline hover:text-accent-hover transition-colors"
+                >
                   Guía de tallas
                 </button>
               </div>
@@ -317,6 +321,7 @@ export default function ProductDetailPage() {
         </div>
       )}
 
+      <SizeGuideModal isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} productSizes={sizes} />
       <Footer />
     </div>
   );
