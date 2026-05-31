@@ -39,35 +39,35 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-base flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Ambient glow */}
+      {/* Resplandor decorativo de fondo */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] pointer-events-none"
         style={{ background: 'radial-gradient(ellipse, var(--accent-glow2) 0%, transparent 70%)' }} />
 
-      {/* Card */}
+      {/* Contenedor del formulario */}
       <div className="card w-full max-w-md relative z-10 p-8 shadow-lg">
 
-        {/* Logo */}
+        {/* Logotipo de la marca */}
         <div className="text-center mb-8">
           <span className="text-[1.6rem] font-black tracking-tight text-primary">
             SNEAK-<span className="text-accent">OUT</span>
           </span>
         </div>
 
-        {/* Title */}
+        {/* Título e indicaciones principales */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-primary mb-1.5">Bienvenido</h1>
           <p className="text-sm text-muted">Ingresa tus datos para continuar</p>
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Email */}
+          {/* Campo de correo electrónico */}
           <div className="mb-4">
             <label className="form-label">Email</label>
             <input id="login-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
               required placeholder="tu@email.com" className="input-field" />
           </div>
 
-          {/* Password */}
+          {/* Campo de contraseña y opción para mostrar/ocultar */}
           <div className="mb-4">
             <label className="form-label">Contraseña</label>
             <div className="relative">
@@ -81,7 +81,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Remember + Forgot */}
+          {/* Recordar datos y recuperación de contraseña */}
           <div className="flex items-center justify-between mb-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)}
@@ -94,20 +94,20 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* Submit */}
+          {/* Botón de envío del formulario */}
           <button type="submit" disabled={loading}
             className={`btn-accent w-full py-3.5 text-base mb-6 ${loading ? 'opacity-80 cursor-not-allowed' : ''}`}>
             {loading ? 'Iniciando sesión...' : 'Iniciar Sesión '}
           </button>
 
-          {/* Divider */}
+          {/* Separador visual informativo */}
           <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 h-px bg-border" />
             <span className="text-muted text-[0.8rem] whitespace-nowrap">O continúa con</span>
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          {/* Social */}
+          {/* Botones de autenticación social */}
           <div className="grid grid-cols-2 gap-3 mb-7">
             {[
               {
@@ -126,7 +126,7 @@ export default function LoginPage() {
             ))}
           </div>
 
-          {/* Register link */}
+          {/* Enlace de redirección a registro */}
           <p className="text-center text-sm text-muted mt-4">
             ¿No tienes cuenta?{' '}
             <Link to="/register" className="text-accent font-bold no-underline hover:text-accent-hover transition-colors">

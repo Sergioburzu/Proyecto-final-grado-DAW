@@ -1,7 +1,7 @@
 import { X, Check } from 'lucide-react';
 import { useState, useMemo } from 'react';
 
-// Conversiones estándar basadas en la imagen de la guía
+// Conversiones predefinidas para tallas estándar
 const SIZE_CONVERSIONS = {
   '39': { uk: '6', us: '6', cm: '25', in: '9.8' },
   '40': { uk: '6.5', us: '7', cm: '25.7', in: '10.1' },
@@ -17,7 +17,7 @@ const SIZE_CONVERSIONS = {
   '50': { uk: '16', us: '17', cm: '32.3', in: '12.7' }
 };
 
-// Generador dinámico/cálculo aproximado para tallas fuera del rango estándar (sin hardcoding)
+// Calcula aproximaciones métricas para tallas especiales
 function getConversion(euroSize) {
   const normalized = String(euroSize).trim().replace(',', '.');
   if (SIZE_CONVERSIONS[normalized]) {
@@ -26,7 +26,7 @@ function getConversion(euroSize) {
 
   const euroNum = parseFloat(normalized);
   if (!isNaN(euroNum) && euroNum > 0) {
-    // Fórmulas de aproximación lineal basadas en el tallaje de calzado
+    // Fórmulas de aproximación lineal para calzado
     const uk = ((euroNum - 39) * 0.9 + 6).toFixed(1).replace('.0', '');
     const us = ((euroNum - 39) * 1.0 + 6).toFixed(1).replace('.0', '');
     const cm = ((euroNum - 39) * 0.66 + 25).toFixed(1).replace('.', ',');
@@ -34,21 +34,21 @@ function getConversion(euroSize) {
     return { euro: normalized, uk, us, cm, in: inch };
   }
 
-  // Fallback para tallas no numéricas (ej. Única, XS, S, M, L)
+  // Retorno por defecto para tallas no numéricas
   return { euro: normalized, uk: '—', us: '—', cm: '—', in: '—' };
 }
 
 export default function SizeGuideModal({ isOpen, onClose, productSizes = [] }) {
-  // Normalizamos las tallas de entrada
+  // Normaliza las tallas de entrada
   const normalizedProductSizes = useMemo(() => {
     return productSizes.map(s => String(s).trim().replace(',', '.'));
   }, [productSizes]);
 
-  // Generamos la lista completa de tallas dinámica (del 39 al 50 como estándar, más cualquier talla del producto que no esté en la lista)
+  // Genera el listado completo de tallas con equivalencias
   const sizesTableData = useMemo(() => {
     const defaultRange = Array.from({ length: 12 }, (_, i) => String(39 + i));
     
-    // Unimos el rango por defecto con las tallas del producto por si hay alguna especial
+    // Combina el rango por defecto y las del producto sin duplicados
     const allSizes = Array.from(new Set([...defaultRange, ...normalizedProductSizes]))
       .sort((a, b) => {
         const numA = parseFloat(a);

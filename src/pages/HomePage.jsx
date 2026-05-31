@@ -20,7 +20,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { addItem } = useCart();
 
-  // ── Filter state ──────────────────────────────────────────────────────
+  // Variables de estado para el control de filtros
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [priceMax, setPriceMax] = useState(null);
   const [sortBy, setSortBy] = useState('default');
@@ -55,7 +55,7 @@ export default function HomePage() {
       const res = await getProducts(params);
       const productsData = res.data || [];
 
-      // Preload images to ensure all sneakers render simultaneously
+      // Precarga de imágenes para asegurar que todas las zapatillas se rendericen simultáneamente
       const preloadPromises = productsData.map(product => {
         const { data: imgData } = supabase.storage
           .from('Images')
@@ -67,11 +67,11 @@ export default function HomePage() {
           const img = new Image();
           img.src = imageUrl;
           img.onload = resolve;
-          img.onerror = resolve; // resolve anyway to avoid blocking
+          img.onerror = resolve; // Resuelve de todos modos para no bloquear
         });
       });
 
-      // Wait for all image assets to load (max 3s timeout) and ensure a minimum 800ms display for a smooth skeleton transition
+      // Espera a que se carguen las imágenes (máximo 3s) y asegura un delay mínimo de 800ms para una transición suave del skeleton
       await Promise.all([
         Promise.race([
           Promise.all(preloadPromises),
@@ -88,7 +88,7 @@ export default function HomePage() {
     }
   };
 
-  //Derived values from products
+  // Valores derivados de los productos para el catálogo
   const brands = useMemo(() => {
     const set = new Set(products.map(p => p.brand).filter(Boolean));
     return [...set].sort();
@@ -106,7 +106,7 @@ export default function HomePage() {
     }
   }, [catalogMaxPrice]);
 
-  // Filtered + sorted list
+  // Lista filtrada y ordenada según los parámetros activos
   const filteredProducts = useMemo(() => {
     let list = [...products];
     if (selectedBrands.length > 0)
@@ -137,7 +137,7 @@ export default function HomePage() {
     );
   };
 
-  // Open modal: copy current state to draft
+  // Abre el modal: copia el estado actual al borrador
   const openFilter = () => {
     setDraftBrands([...selectedBrands]);
     setDraftPrice(priceMax ?? catalogMaxPrice);
@@ -145,7 +145,7 @@ export default function HomePage() {
     setFilterOpen(true);
   };
 
-  // Apply draft to real state
+  // Aplica el borrador al estado real reactivo
   const applyFilters = () => {
     setSelectedBrands(draftBrands);
     setPriceMax(draftPrice);
@@ -169,13 +169,13 @@ export default function HomePage() {
   const trending = products.slice(0, 4);
   const newReleases = products.slice(2, 6);
 
-  /* ── Full catalog / search view ── */
+  /* Vista del catálogo completo o resultados de búsqueda */
   if (showFullCatalog) {
     return (
       <div className="min-h-screen bg-base">
         <div className="section-container py-12">
 
-          {/* Header */}
+          {/* Encabezado de la página */}
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-3xl font-black text-primary">
@@ -192,7 +192,7 @@ export default function HomePage() {
             </button>
           </div>
 
-          {/* ── Botón Filtros (desktop + móvil) ── */}
+          {/* Botonera de activación de filtros */}
           {!loading && products.length > 0 && (
             <div className="flex items-center gap-3 mb-8">
               <button
@@ -225,13 +225,13 @@ export default function HomePage() {
           {/* ── Modal de filtros ── */}
           {filterOpen && (
             <>
-              {/* Backdrop */}
+              {/* Fondo sombreado */}
               <div
                 className="fixed inset-0 z-50"
                 style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
                 onClick={() => setFilterOpen(false)}
               />
-              {/* Panel */}
+              {/* Cuerpo del modal */}
               <div
                 className="fixed z-50 top-1/2 left-1/2 w-[92vw] max-w-lg"
                 style={{
@@ -303,11 +303,11 @@ export default function HomePage() {
                 <p className="text-[0.7rem] font-bold text-muted uppercase tracking-widest mb-2">Ordenar por</p>
                 <div className="flex flex-wrap gap-2 mb-8">
                   {[
-                    { value: 'default',    label: 'Relevancia' },
-                    { value: 'price_asc',  label: 'Precio ↑' },
+                    { value: 'default', label: 'Relevancia' },
+                    { value: 'price_asc', label: 'Precio ↑' },
                     { value: 'price_desc', label: 'Precio ↓' },
-                    { value: 'name_az',    label: 'A → Z' },
-                    { value: 'name_za',    label: 'Z → A' },
+                    { value: 'name_az', label: 'A → Z' },
+                    { value: 'name_za', label: 'Z → A' },
                   ].map(opt => {
                     const active = draftSort === opt.value;
                     return (
@@ -348,7 +348,7 @@ export default function HomePage() {
             </>
           )}
 
-          {/* Products grid */}
+          {/* Cuadrícula de productos o esqueletos de carga */}
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
@@ -375,14 +375,14 @@ export default function HomePage() {
     );
   }
 
-  /* Main view */
+  /* Vista principal de la landing page */
   return (
     <div className="min-h-screen bg-base">
 
-      {/* Hero Slider */}
+      {/* Carrusel de productos destacados (Hero Slider) */}
       <ProductSlider />
 
-      {/* Divider */}
+      {/* Línea divisoria */}
       <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mx-8" />
 
       {/* En Tendencia */}
@@ -413,7 +413,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Divider */}
+      {/* Línea divisoria */}
       <div className="h-px bg-gradient-to-r from-transparent via-border2 to-transparent mx-8" />
 
       {/* Nuevos Lanzamientos */}

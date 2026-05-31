@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getOrders, getFavorites } from '../services/api';
+import { supabase } from '../supabaseClient';
 import toast from 'react-hot-toast';
+
+const STORAGE_BUCKET = 'Images';
+const CATALOG_IMAGE = '0.png';
 
 const statusLabels = {
   paid: { label: 'Pagado', color: 'text-green-600  bg-green-100' }
@@ -61,7 +65,7 @@ export default function ProfilePage() {
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row gap-8">
 
-          {/* ── Sidebar ── */}
+          {/* Barra lateral de navegación del perfil */}
           <div className="w-full md:w-64 shrink-0">
             <div className="bg-raised border border-border rounded-2xl p-6 sticky top-24">
               <div className="flex items-center gap-4 mb-8">
@@ -100,10 +104,10 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* ── Main Content ── */}
+          {/* Contenido principal de la sección activa */}
           <div className="flex-1">
 
-            {/* DATOS */}
+            {/* Datos Personales */}
             {activeTab === 'datos' && (
               <div className="bg-raised border border-border p-6 rounded-2xl">
                 <h2 className="text-xl font-bold text-primary mb-6">Datos Personales</h2>
@@ -126,7 +130,7 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {/* PEDIDOS */}
+            {/* Historial de Pedidos */}
             {activeTab === 'pedidos' && (
               <div className="bg-raised border border-border p-6 rounded-2xl">
                 <h2 className="text-xl font-bold text-primary mb-6">Mis Pedidos</h2>
@@ -173,21 +177,26 @@ export default function ProfilePage() {
 
                           {/* Productos del pedido */}
                           <div className="flex flex-col gap-2 mb-3">
-                            {(order.order_items || []).map((item, idx) => (
-                              <div key={idx} className="flex items-center gap-3">
-                                {item.products?.image_url && (
-                                  <img src={item.products.image_url} alt={item.products?.name}
-                                    className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm text-secondary font-medium truncate">{item.products?.name || `Producto #${item.product_id}`}</p>
-                                  <p className="text-xs text-muted">x{item.quantity} · {Number(item.unit_price).toFixed(2)}€ ud.</p>
+                            {(order.order_items || []).map((item, idx) => {
+                              const imageUrl = item.products?.image_url
+                                ? supabase.storage.from(STORAGE_BUCKET).getPublicUrl(`${item.products.image_url}/${CATALOG_IMAGE}`).data.publicUrl
+                                : null;
+                              return (
+                                <div key={idx} className="flex items-center gap-3">
+                                  {imageUrl && (
+                                    <img src={imageUrl} alt={item.products?.name}
+                                      className="w-10 h-10 rounded-lg object-cover border border-border shrink-0" />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-secondary font-medium truncate">{item.products?.name || `Producto #${item.product_id}`}</p>
+                                    <p className="text-xs text-muted">x{item.quantity} · {Number(item.unit_price).toFixed(2)}€ ud.</p>
+                                  </div>
+                                  <span className="text-sm font-bold text-accent shrink-0">
+                                    {(item.quantity * item.unit_price).toFixed(2)}€
+                                  </span>
                                 </div>
-                                <span className="text-sm font-bold text-accent shrink-0">
-                                  {(item.quantity * item.unit_price).toFixed(2)}€
-                                </span>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
 
                           <div className="flex justify-between items-center pt-3 border-t border-border">
@@ -202,7 +211,7 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {/* FAVORITOS */}
+            {/* Listado de Favoritos */}
             {activeTab === 'favoritos' && (
               <div className="bg-raised border border-border p-6 rounded-2xl">
                 <h2 className="text-xl font-bold text-primary mb-4">Mis Favoritos</h2>
@@ -224,10 +233,13 @@ export default function ProfilePage() {
                     {favorites.map((fav) => {
                       const p = fav.products;
                       if (!p) return null;
+                      const imageUrl = p.image_url
+                        ? supabase.storage.from(STORAGE_BUCKET).getPublicUrl(`${p.image_url}/${CATALOG_IMAGE}`).data.publicUrl
+                        : 'https://via.placeholder.com/400x400?text=No+Image';
                       return (
                         <div key={fav.id} onClick={() => navigate(`/producto/${p.id}`)} className="cursor-pointer border border-border rounded-xl p-3 hover:border-accent transition-colors bg-surface group relative">
                           <div className="aspect-square bg-raised rounded-lg mb-3 overflow-hidden">
-                            <img src={p.image_url} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            <img src={imageUrl} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                           </div>
                           <p className="text-accent text-[0.65rem] font-bold tracking-widest uppercase mb-1">{p.brand}</p>
                           <p className="text-sm font-bold text-primary truncate mb-1">{p.name}</p>

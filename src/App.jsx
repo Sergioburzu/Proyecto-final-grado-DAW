@@ -17,14 +17,14 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import ContactoPage from './pages/ContactoPage';
 import ProfilePage from './pages/ProfilePage';
 
-// Protected route wrapper
+// Componente de ruta protegida para usuarios autenticados
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Cargando...</div>;
   return user ? children : <Navigate to="/login" replace />;
 }
 
-// Admin route wrapper
+// Componente de ruta protegida para administradores
 function AdminRoute({ children }) {
   const { user, loading, isAdmin } = useAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Cargando...</div>;

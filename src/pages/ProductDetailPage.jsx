@@ -17,6 +17,7 @@ import { HiOutlineShoppingCart } from "react-icons/hi";
 import { Heart } from 'lucide-react';
 import SizeGuideModal from '../components/SizeGuideModal';
 
+// Helper para procesar la lista de tallas en un array
 function parseSizes(sizeStr) {
   if (!sizeStr) return [];
   return sizeStr.split(',').map(s => s.trim()).filter(Boolean);
@@ -50,7 +51,7 @@ export default function ProductDetailPage() {
         const currentProduct = prodRes.data;
         const relatedData = allRes.data.filter(p => String(p.id) !== String(id)).slice(0, 4);
 
-        // Preload detail images and related product thumbnail images
+        // Precarga de imágenes del producto actual y recomendados
         const preloadUrls = [];
         if (currentProduct) {
           for (let i = 0; i < IMAGE_COUNT; i++) {
@@ -72,11 +73,11 @@ export default function ProductDetailPage() {
             const img = new Image();
             img.src = url;
             img.onload = resolve;
-            img.onerror = resolve; // resolve anyway to avoid hanging
+            img.onerror = resolve; // Resuelve en cualquier caso para no colgar la UI
           });
         });
 
-        // Wait for all image assets to load (max 3s timeout) and ensure a minimum 800ms display for a smooth skeleton transition
+        // Espera la carga de assets y asegura una animación fluida
         await Promise.all([
           Promise.race([
             Promise.all(preloadPromises),
@@ -139,11 +140,11 @@ export default function ProductDetailPage() {
         <div className="bg-base min-h-screen">
           <div className="max-w-7xl mx-auto px-6 py-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-              {/* Product Image skeleton */}
+              {/* Esqueleto de la imagen del producto */}
               <div className="relative rounded-2xl aspect-square overflow-hidden border border-border flex items-center justify-center">
                 <Skeleton height="100%" containerClassName="w-full h-full block leading-none" />
               </div>
-              {/* Product Info skeleton */}
+              {/* Esqueleto de la información del producto */}
               <div className="flex flex-col gap-4 pt-2">
                 <Skeleton height={14} width="15%" borderRadius="0.375rem" />
                 <Skeleton height={32} width="60%" borderRadius="0.375rem" />
@@ -175,7 +176,7 @@ export default function ProductDetailPage() {
   return (
     <div className="bg-base min-h-screen">
 
-      {/* Breadcrumb */}
+      {/* Botón de retorno al catálogo */}
       <div className="max-w-7xl mx-auto px-6 pt-6">
         <button onClick={() => navigate(-1)}
           className="flex items-center gap-1.5 text-muted text-sm bg-transparent border-none cursor-pointer p-0 transition-colors hover:text-accent">
@@ -183,11 +184,11 @@ export default function ProductDetailPage() {
         </button>
       </div>
 
-      {/* Product layout */}
+      {/* Estructura de presentación del artículo */}
       <div className="max-w-7xl mx-auto px-6 py-8 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-start">
 
-          {/* Images */}
+          {/* Galería de imágenes */}
           <div>
             <div className="bg-raised rounded-2xl overflow-hidden aspect-square mb-4 border border-border flex items-center justify-center">
               <img
@@ -196,7 +197,7 @@ export default function ProductDetailPage() {
                 className="w-full h-full object-contain p-6 transition-opacity duration-300"
               />
             </div>
-            {/* Thumbnails */}
+            {/* Vistas en miniatura secundarias */}
             <div className="grid grid-cols-3 gap-3">
               {images.map((url, i) => (
                 <button key={i} onClick={() => setThumb(i)}
@@ -209,7 +210,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Info */}
+          {/* Información y detalles del producto */}
           <div className="pt-2">
             <p className="text-accent text-xs font-bold tracking-[0.1em] uppercase mb-2">{product.brand}</p>
             <h1 className="text-4xl font-black text-primary leading-tight mb-3">{product.name}</h1>
@@ -219,7 +220,7 @@ export default function ProductDetailPage() {
               {product.description || 'Diseñadas para redefinir el lujo urbano. Una zapatilla premium con una estética de vanguardia.'}
             </p>
 
-            {/* Size selector */}
+            {/* Selector de tallas disponibles */}
             <div className="mb-6">
               <div className="flex justify-between items-center mb-4">
                 <p className="text-primary font-bold text-sm">Selecciona tu talla</p>
@@ -235,7 +236,6 @@ export default function ProductDetailPage() {
                   {sizes.map(size => (
                     <button key={size} onClick={() => setSelected(selectedSize === size ? null : size)}
                       className="px-4 py-2.5 rounded-xl text-sm font-semibold cursor-pointer transition-all duration-150 min-w-[3.5rem]"
-                      /* bg, color, border vary with selectedSize → style required */
                       style={{
                         background: selectedSize === size ? 'var(--color-accent)' : 'var(--color-surface)',
                         color: selectedSize === size ? '#fff' : 'var(--color-secondary)',
@@ -250,7 +250,7 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* Stock badges */}
+            {/* Alertas de stock */}
             {product.stock <= 5 && product.stock > 0 && (
               <div className="mb-4 px-4 py-2.5 bg-red-900/20 border border-red-900/30 rounded-lg">
                 <p className="text-red-300 text-[0.8rem] font-semibold m-0"><FiAlertTriangle className="mr-2 text-yellow-400 inline-block" /> Solo quedan {product.stock} unidades</p>
@@ -262,7 +262,7 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Add to cart */}
+            {/* Añadir al Carrito */}
             <button onClick={handleAddToCart} disabled={product.stock === 0}
               className="w-full py-4 rounded-xl text-base font-black flex items-center justify-center gap-2 mb-3 transition-all duration-200"
               style={{
@@ -276,7 +276,7 @@ export default function ProductDetailPage() {
               {selectedSize && <span className="font-normal text-[0.85rem] opacity-85">— Talla {selectedSize}</span>}
             </button>
 
-            {/* Favourites */}
+            {/* Favoritos */}
             <button onClick={handleToggleFavorite} disabled={favLoading}
               className={`btn-outline w-full py-3.5 text-sm font-bold mb-8 transition-colors flex items-center justify-center gap-2 ${isFav ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:border-red-300' : ''}`}>
               {favLoading ? (
@@ -289,7 +289,7 @@ export default function ProductDetailPage() {
               )}
             </button>
 
-            {/* Benefits */}
+            {/* Fila de beneficios de la tienda */}
             <div className="flex flex-col gap-4 border-t border-border2 pt-6">
               {[
                 { icon: <BsBox2 className='text-accent' size={25} />, title: 'Envío Gratis', desc: 'En compras superiores a 150€' },
@@ -309,7 +309,7 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Related */}
+      {/* Listado de artículos recomendados */}
       {related.length > 0 && (
         <div className="border-t border-border2 pt-12 pb-8">
           <div className="max-w-7xl mx-auto px-6">

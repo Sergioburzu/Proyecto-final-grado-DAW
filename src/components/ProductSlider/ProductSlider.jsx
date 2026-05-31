@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
-import { useCart } from '../../context/CartContext';
-import toast from 'react-hot-toast';
 import './ProductSlider.css';
 
-/* ─── Skeleton ── */
+/* Esqueleto de carga del carrusel */
 function SliderSkeleton() {
   return (
     <div className="w-full flex flex-col items-center justify-center gap-6 p-12 overflow-hidden"
@@ -20,7 +18,7 @@ function SliderSkeleton() {
   );
 }
 
-/* ─── Stars ── */
+/* Indicador visual de estrellas */
 function Stars() {
   return (
     <div className="flex gap-0.5">
@@ -31,24 +29,7 @@ function Stars() {
   );
 }
 
-/* ─── Shared title style ── */
-/*
-const titleStyle = {
-  fontFamily: '"IBM Plex Mono", monospace',
-  fontSize: 'clamp(2rem, 5vw, 6rem)',
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.18em',
-  lineHeight: 1.05,
-  textAlign: 'center',
-  width: '60%',
-  display: '-webkit-box',
-  WebkitLineClamp: 2,
-  WebkitBoxOrient: 'vertical',
-  overflow: 'hidden',
-};
-*/
-/* ─── Main ── */
+/* Carrusel de productos destacados con efectos de capas y parallax */
 export default function ProductSlider() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +40,6 @@ export default function ProductSlider() {
 
   const timerRef = useRef(null);
   const navigate = useNavigate();
-  const { addItem } = useCart();
 
   useEffect(() => {
     supabase
@@ -74,6 +54,7 @@ export default function ProductSlider() {
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
+  // Controla la transición de salida e ingreso de las diapositivas
   const navigate_slide = useCallback((dir) => {
     if (isAnimating || products.length < 2) return;
     setIsAnimating(true);
@@ -98,8 +79,7 @@ export default function ProductSlider() {
   const handleBuyNow = () => {
     const p = products[current];
     if (!p) return;
-    addItem(p);
-    toast.success(`${p.name} añadido al carrito`);
+    navigate(`/producto/${p.id}`);
   };
 
   if (loading) return <SliderSkeleton />;
@@ -112,17 +92,14 @@ export default function ProductSlider() {
       aria-label="Slider de productos destacados"
       style={{ minHeight: 'calc(100vh - 72px)', background: 'linear-gradient(135deg,#4a1118 0%,#2a080c 40%,#0d0000 75%,#000 100%)' }}
     >
-      {/* Ambient glow */}
+      {/* Luz ambiental de fondo */}
       <div aria-hidden="true" className="absolute pointer-events-none z-0"
         style={{
           top: '20%', left: '35%', width: '600px', height: '450px',
           background: 'radial-gradient(ellipse,rgba(114,28,36,0.4) 0%,transparent 70%)'
         }} />
 
-      {/* ─────────────────────────────────────────────────────────
-          CAPA 1 — Texto base SÓLIDO BLANCO  (z-[1], detrás imagen)
-          Visible solo donde el texto NO solapa la zapatilla.
-      ───────────────────────────────────────────────────────── */}
+      {/* CAPA 1 — Texto base sólido blanco (detrás de la imagen) */}
       <div
         className={`${textClass} absolute inset-0 z-[1] flex items-center justify-center pointer-events-none`}
         aria-hidden="true"
@@ -138,10 +115,7 @@ export default function ProductSlider() {
         </h2>
       </div>
 
-      {/* ─────────────────────────────────────────────────────────
-          CAPA 2 — Imagen de la zapatilla  (z-[2])
-          Queda entre los dos textos para crear el efecto cutout.
-      ───────────────────────────────────────────────────────── */}
+      {/* CAPA 2 — Imagen de la zapatilla con efecto flotante */}
       <div className={`${imgClass} absolute inset-0 z-[2] flex items-center justify-center pointer-events-none`}>
         <img
           key={product.id}
@@ -162,11 +136,7 @@ export default function ProductSlider() {
         />
       </div>
 
-      {/* ─────────────────────────────────────────────────────────
-          CAPA 3 — Texto OUTLINE TRANSPARENTE  (z-[3], sobre imagen)
-          Solo el trazo blanco es visible; el relleno es transparent,
-          dejando ver la zapatilla a través de las letras.
-      ───────────────────────────────────────────────────────── */}
+      {/* CAPA 3 — Texto de contorno transparente (por encima de la imagen) */}
       <div
         className={`${textClass} absolute inset-0 z-[3] flex items-center justify-center pointer-events-none`}
         aria-hidden="true"
@@ -182,16 +152,12 @@ export default function ProductSlider() {
         </h2>
       </div>
 
-      {/* ─────────────────────────────────────────────────────────
-          CAPA 4 — UI inferior: precio, stars, descripción, botón
-          (z-[4], pointer-events activos solo en los controles)
-      ───────────────────────────────────────────────────────── */}
+      {/* CAPA 4 — Panel inferior con precio, descripción y botón de compra */}
       <div
         className={`${textClass} absolute bottom-0 left-0 right-0 z-[4]
           flex flex-col md:flex-row md:justify-between md:items-end
           pointer-events-none p-6 md:p-10 gap-3`}
       >
-        {/* Left: precio + stars + descripción */}
         <div className="flex flex-col gap-1.5 pointer-events-none md:max-w-[45%]">
           <span className="text-3xl font-black md:text-4xl text-white tracking-tight">
             {Number(product.price).toFixed(2)}€
@@ -206,18 +172,17 @@ export default function ProductSlider() {
           )}
         </div>
 
-        {/* Botón COMPRAR */}
         <button
           id={`ps-buy-${product.id}`}
           className="ps-buy-btn w-full md:w-auto text-center pointer-events-auto"
           onClick={handleBuyNow}
-          aria-label={`Añadir ${product.name} al carrito`}
+          aria-label={`Ver detalles de ${product.name}`}
         >
           COMPRAR
         </button>
       </div>
 
-      {/* Arrows  z-[5] */}
+      {/* Controles laterales del carrusel */}
       <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between px-6 z-[5] pointer-events-none">
         <button
           id="ps-prev"

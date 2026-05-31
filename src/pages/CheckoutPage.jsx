@@ -65,7 +65,7 @@ export default function CheckoutPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-          {/* Shipping form */}
+          {/* Formulario con los datos de entrega del usuario */}
           <div className="card p-8">
             <h2 className="text-xl font-bold text-primary mb-6">Datos de Envío</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -98,7 +98,7 @@ export default function CheckoutPage() {
             </form>
           </div>
 
-          {/* Order summary */}
+          {/* Resumen de los artículos seleccionados */}
           <div className="card p-8 h-fit">
             <h2 className="text-xl font-bold text-primary mb-6">Resumen del Pedido</h2>
             <div className="flex flex-col gap-3 max-h-80 overflow-y-auto">

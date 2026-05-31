@@ -58,18 +58,18 @@ export default function Navbar({ onCartOpen }) {
   };
 
   return (
-    /* position:relative needed so the absolute mobile menu is relative to the nav */
     <nav className="sticky top-0 z-50 bg-base/85 backdrop-blur-xl border-b border-border shadow-[0_1px_0_rgba(185,28,28,0.05)] relative">
+      {/* Posición relativa para el despliegue absoluto del menú móvil */}
 
-      {/* ── Desktop bar ── */}
+      {/* Barra de navegación de escritorio */}
       <div className="max-w-7xl mx-auto px-6 flex items-center h-[4.5rem] gap-6">
 
-        {/* Logo */}
+        {/* Logotipo de la marca */}
         <Link to="/" className="shrink-0 flex items-center no-underline" onClick={closeMobile}>
           <img src={logoImg} alt="SNEAK-OUT" className="h-[3.2rem] w-auto object-contain" />
         </Link>
 
-        {/* Nav links — hidden on mobile */}
+        {/* Enlaces de navegación - ocultos en móvil */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium flex-1 justify-center">
           <Link to="/" className="nav-link text-primary">Inicio</Link>
           <Link to="/?section=catalogo" className="nav-link">Catálogo</Link>
@@ -81,10 +81,10 @@ export default function Navbar({ onCartOpen }) {
           )}
         </div>
 
-        {/* Right side */}
+        {/* Acciones de usuario y botones de control */}
         <div className="flex items-center gap-1 ml-auto">
 
-          {/* Search */}
+          {/* Control de búsqueda */}
           {searchOpen ? (
             <form onSubmit={handleSearch} className="flex items-center gap-2">
               <input
@@ -107,7 +107,7 @@ export default function Navbar({ onCartOpen }) {
             </button>
           )}
         
-          {/* Favorites — solo si hay sesión */}
+          {/* Enlace a favoritos (requiere inicio de sesión) */}
           {user && (
             <Link to="/perfil?tab=favoritos" aria-label="Mis favoritos"
               className="p-2 rounded-full bg-transparent text-secondary hover:text-accent transition-colors">
@@ -115,7 +115,7 @@ export default function Navbar({ onCartOpen }) {
             </Link>
           )}
 
-          {/* Cart */}
+          {/* Botón de apertura del carrito */}
           <button onClick={onCartOpen} aria-label="Abrir carrito"
             className="relative p-2 rounded-full bg-transparent border-none cursor-pointer text-secondary hover:text-accent transition-colors">
             <IconCart />
@@ -126,7 +126,7 @@ export default function Navbar({ onCartOpen }) {
             )}
           </button>
 
-          {/* Auth — desktop */}
+          {/* Control de sesión para escritorio */}
           <div className="hidden md:flex items-center gap-3 ml-1">
             {user ? (
               <>
@@ -155,7 +155,7 @@ export default function Navbar({ onCartOpen }) {
             )}
           </div>
 
-          {/* Hamburger — mobile only */}
+          {/* Botón menú hamburguesa para móviles */}
           <button
             onClick={() => setMobileOpen(o => !o)}
             aria-label="Abrir menú"
@@ -165,7 +165,7 @@ export default function Navbar({ onCartOpen }) {
         </div>
       </div>
 
-      {/* ── Mobile menu — position:absolute so it overlays, never pushes content ── */}
+      {/* Menú desplegable móvil (superpuesto sobre el contenido) */}
       {mobileOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-base/95 backdrop-blur-xl border-b border-border z-50 shadow-xl">
           <div className="px-6 py-5 flex flex-col gap-1">
@@ -184,7 +184,7 @@ export default function Navbar({ onCartOpen }) {
               </Link>
             )}
 
-            {/* Auth — mobile */}
+            {/* Control de sesión para móviles */}
             <div className="pt-3">
               {user ? (
                 <div className="flex items-center justify-between">

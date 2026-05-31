@@ -17,7 +17,7 @@ export default function MiniProductCard({ product }) {
       onClick={() => navigate(`/producto/${product.id}`)}
       className="cursor-pointer group"
     >
-      {/* Image container */}
+      {/* Contenedor de la imagen y badges de stock */}
       <div className="relative aspect-square bg-raised rounded-xl overflow-hidden mb-3 border border-border transition-colors duration-200 group-hover:border-accent flex items-center justify-center">
 
         {product.stock <= 5 && product.stock > 0 && (
@@ -38,7 +38,7 @@ export default function MiniProductCard({ product }) {
         />
       </div>
 
-      {/* Info */}
+      {/* Nombre y precio del producto */}
       <p className="text-sm font-semibold text-primary truncate m-0">
         {product.name}
       </p>

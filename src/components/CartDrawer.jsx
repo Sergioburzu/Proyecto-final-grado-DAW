@@ -27,7 +27,7 @@ export default function CartDrawer({ isOpen, onClose }) {
 
   return (
     <>
-      {/* Overlay */}
+      {/* Fondo oscuro para cerrar el drawer */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/75 backdrop-blur-sm z-40"
@@ -35,12 +35,12 @@ export default function CartDrawer({ isOpen, onClose }) {
         />
       )}
 
-      {/* Drawer — transform is dynamic JS so style is required here */}
+      {/* Panel deslizable del carrito con traducción */}
       <div
         className="fixed right-0 top-0 h-full w-full max-w-md bg-base border-l border-border z-50 flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{ transform: isOpen ? 'translateX(0)' : 'translateX(100%)' }}
       >
-        {/* Header */}
+        {/* Encabezado del carrito */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-xl font-black text-primary">
             Tu Carrito
@@ -58,7 +58,7 @@ export default function CartDrawer({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Items */}
+        {/* Productos en el carrito */}
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-muted">
@@ -112,7 +112,7 @@ export default function CartDrawer({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* Footer */}
+        {/* Resumen y acciones del carrito */}
         {items.length > 0 && (
           <div className="p-6 border-t border-border flex flex-col gap-4">
             <div className="flex justify-between items-center">

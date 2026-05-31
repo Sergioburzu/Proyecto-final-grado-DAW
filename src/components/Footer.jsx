@@ -4,10 +4,10 @@ export default function Footer() {
   return (
     <footer className="bg-base border-t border-border mt-20">
 
-      {/* Brand marquee */}
+      {/* Carrusel animado de marcas */}
       <BrandMarquee />
 
-      {/* Links grid */}
+      {/* Enlaces de navegación estructurados por categorías */}
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
         {[
           { title: 'Tienda',   links: ['Catálogo', 'Tendencias', 'Drops', 'Ofertas'] },
@@ -32,7 +32,7 @@ export default function Footer() {
         ))}
       </div>
 
-      {/* Copyright */}
+      {/* Derechos de autor y pie de página */}
       <div className="border-t border-border px-6 py-6 text-center">
         <p className="text-secondary text-xs">
           © 2026 <span className="text-accent">SNEAK-OUT</span>. Todos los derechos reservados.

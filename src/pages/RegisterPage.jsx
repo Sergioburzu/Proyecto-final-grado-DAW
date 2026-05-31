@@ -52,19 +52,19 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-base flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Glow */}
+      {/* Resplandor decorativo de fondo */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] pointer-events-none"
         style={{ background: 'radial-gradient(ellipse, var(--accent-glow2) 0%, transparent 70%)' }} />
 
-      {/* Card */}
+      {/* Contenedor del formulario */}
       <div className="card w-full max-w-md relative z-10 p-8 shadow-lg">
-        {/* Logo */}
+        {/* Logotipo de la marca */}
         <div className="text-center mb-8">
           <span className="text-[1.6rem] font-black tracking-tight text-primary">
             SNEAK-<span className="text-accent">OUT</span>
           </span>
         </div>
-        {/* Title */}
+        {/* Título e indicaciones de registro */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-extrabold text-primary mb-1.5">Crear Cuenta</h1>
           <p className="text-sm text-muted">Únete a la comunidad SNEAK-OUT</p>
@@ -97,14 +97,14 @@ export default function RegisterPage() {
             {loading ? 'Creando cuenta...' : 'Crear Cuenta '}
           </button>
 
-          {/* Divider */}
+          {/* Separador informativo */}
           <div className="flex items-center gap-3 mb-5">
             <div className="flex-1 h-px bg-border" />
             <span className="text-muted text-[0.8rem] whitespace-nowrap">O regístrate con</span>
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          {/* Social */}
+          {/* Registro alternativo a través de redes sociales */}
           <div className="grid grid-cols-2 gap-3 mb-7">
             {[
               { label: 'Google', onClick: () => toast('Google OAuth no disponible en demo', { icon: 'ℹ️' }),

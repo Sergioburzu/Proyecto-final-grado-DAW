@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getProducts, createProduct, updateProduct, deleteProduct } from '../../services/api';
+import { getProducts, createProduct, updateProduct, deleteProduct, getAllOrders } from '../../services/api';
 import toast from 'react-hot-toast';
 import { supabase } from '../../supabaseClient';
 
 const STORAGE_BUCKET = 'Images';
 const CATALOG_IMAGE = '0.png';
 
-import { CirclePlus, Trash2, Package2, Tag, AlertCircle, Search, FilePenLine, X } from 'lucide-react';
+import { CirclePlus, Trash2, Package2, Tag, AlertCircle, Search, FilePenLine, X, ClipboardList, FileDown } from 'lucide-react';
 
-/* ── Icons ─────────────────────────────────────────────────────────────── */
+/* Iconos del panel */
 const IconPlus = () => <CirclePlus />
 const IconEdit = () => <FilePenLine />
 const IconTrash = () => <Trash2 />
@@ -18,12 +18,13 @@ const IconTag = () => <Tag />
 const IconAlert = () => <AlertCircle />
 const IconSearch = () => <Search />
 const IconClose = () => <X />
+const IconClipboard = () => <ClipboardList />
+const IconFileDown = () => <FileDown />
 
-
-/* ── Form default ────────────────────────────────────────────────────── */
+/* Datos iniciales del formulario de productos */
 const emptyForm = { name: '', brand: '', description: '', price: '', size: '', image_url: '', stock: '' };
 
-/* ── Stat card ───────────────────────────────────────────────────────── */
+/* Tarjeta informativa de métricas */
 function StatCard({ icon, label, value, sub }) {
   return (
     <div className="card p-6 flex items-center gap-5 hover:shadow-lg transition-shadow duration-200">
@@ -39,7 +40,7 @@ function StatCard({ icon, label, value, sub }) {
   );
 }
 
-/* ── Field wrapper ────────────────────────────────────────────────────── */
+/* Envoltorio estructurado de campos de formulario */
 function Field({ label, children }) {
   return (
     <div>
@@ -49,7 +50,7 @@ function Field({ label, children }) {
   );
 }
 
-/* ── Delete confirm modal ─────────────────────────────────────────────── */
+/* Modal de confirmación para eliminar un producto */
 function DeleteModal({ product, onConfirm, onCancel }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(28,25,23,0.5)', backdropFilter: 'blur(4px)' }}>
@@ -77,13 +78,13 @@ function DeleteModal({ product, onConfirm, onCancel }) {
   );
 }
 
-/* ── Product modal (create / edit) ────────────────────────────────────── */
+/* Modal para crear o editar un producto */
 function ProductModal({ editId, form, onChange, onSubmit, onClose, saving }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: 'rgba(28,25,23,0.5)', backdropFilter: 'blur(4px)' }}>
       <div className="card p-8 w-full max-w-2xl shadow-2xl my-8 animate-[fadeInUp_0.25s_ease-out]">
 
-        {/* Modal header */}
+        {/* Cabecera del modal */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-black text-primary">{editId ? 'Editar Producto' : 'Nuevo Producto'}</h2>
@@ -128,7 +129,7 @@ function ProductModal({ editId, form, onChange, onSubmit, onClose, saving }) {
               className="input-field resize-none" />
           </Field>
 
-          {/* Preview de imagen si hay URL */}
+          {/* Previsualización de imagen si existe la ruta */}
           {form.image_url && (
             <div className="mt-4 p-3 rounded-xl bg-raised border border-border flex items-center gap-3">
               <img src={supabase.storage.from(STORAGE_BUCKET).getPublicUrl(`${form.image_url}/${CATALOG_IMAGE}`).data.publicUrl} alt="Preview" className="w-16 h-16 rounded-lg object-contain bg-card border border-border" onError={(e) => { e.target.style.display = 'none'; }} />
@@ -151,7 +152,7 @@ function ProductModal({ editId, form, onChange, onSubmit, onClose, saving }) {
   );
 }
 
-/* ── Main AdminDashboard ─────────────────────────────────────────────── */
+/* Panel de administración principal */
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
@@ -163,7 +164,12 @@ export default function AdminDashboard() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [search, setSearch] = useState('');
 
-  useEffect(() => { fetchProducts(); }, []);
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchOrders();
+  }, []);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -173,6 +179,201 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchOrders = async () => {
+    try {
+      const res = await getAllOrders();
+      setOrders(res.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDownloadPDF = () => {
+    if (!orders.length) return;
+
+    const totalSales = orders.reduce((sum, o) => sum + Number(o.total || 0), 0).toFixed(2);
+    const totalItems = orders.reduce((sum, o) => sum + (o.order_items?.reduce((s, item) => s + item.quantity, 0) || 0), 0);
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      toast.error('No se pudo abrir la ventana de impresión. Habilita las ventanas emergentes.');
+      return;
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8" />
+        <title>Reporte de Pedidos y Ventas - SNEAK-OUT</title>
+        <style>
+          body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #1c1917;
+            margin: 40px;
+            line-height: 1.5;
+          }
+          .header {
+            border-bottom: 2px solid #721c24;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .title {
+            font-size: 28px;
+            font-weight: 900;
+            color: #721c24;
+            letter-spacing: 0.05em;
+            margin: 0;
+          }
+          .meta-info {
+            font-size: 12px;
+            color: #78716c;
+            text-align: right;
+          }
+          .summary-cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 35px;
+          }
+          .card {
+            flex: 1;
+            border: 1px solid #e7e5e4;
+            border-radius: 12px;
+            padding: 15px 20px;
+            background-color: #fafaf9;
+          }
+          .card-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #a8a29e;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+          }
+          .card-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1c1917;
+            margin-top: 5px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 12px;
+          }
+          th, td {
+            border: 1px solid #e7e5e4;
+            padding: 12px;
+            text-align: left;
+          }
+          th {
+            background-color: #721c24;
+            color: white;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+          }
+          tr:nth-child(even) {
+            background-color: #fafaf9;
+          }
+          .product-list {
+            margin: 0;
+            padding-left: 15px;
+          }
+          .badge-paid {
+            display: inline-block;
+            background-color: #d1e7dd;
+            color: #0f5132;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 10px;
+            text-transform: uppercase;
+          }
+          @media print {
+            body { margin: 20px; }
+            button { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1 class="title">SNEAK-OUT</h1>
+            <p style="margin: 5px 0 0 0; font-size: 14px; font-weight: bold; color: #78716c;">Reporte Oficial de Pedidos y Movimientos</p>
+          </div>
+          <div class="meta-info">
+            <p style="margin: 0;"><strong>Fecha de generación:</strong> ${new Date().toLocaleDateString('es-ES')}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Generado por:</strong> ${user?.user_metadata?.name || user?.email || 'Administrador'}</p>
+          </div>
+        </div>
+
+        <div class="summary-cards">
+          <div class="card">
+            <div class="card-label">Facturación Total</div>
+            <div class="card-value" style="color: #721c24;">${totalSales}€</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Total Pedidos</div>
+            <div class="card-value">${orders.length}</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Artículos Vendidos</div>
+            <div class="card-value">${totalItems} uds</div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Contacto</th>
+              <th>Dirección de Envío</th>
+              <th>Artículos</th>
+              <th>Estado</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${orders.map(o => `
+              <tr>
+                <td>${new Date(o.created_at).toLocaleDateString('es-ES')}</td>
+                <td><strong>${o.shipping_name}</strong></td>
+                <td>${o.shipping_phone}</td>
+                <td>${o.shipping_address}, ${o.shipping_city} (C.P. ${o.shipping_zip})</td>
+                <td>
+                  <ul class="product-list">
+                    ${o.order_items?.map(item => `
+                      <li>${item.products?.name || 'Producto'} (${item.quantity} ud${item.quantity > 1 ? 's' : ''}) - ${(item.unit_price * item.quantity).toFixed(2)}€</li>
+                    `).join('') || '<li>Sin artículos</li>'}
+                  </ul>
+                </td>
+                <td><span class="badge-paid">Pagado</span></td>
+                <td><strong style="color: #721c24; font-size: 13px;">${Number(o.total || 0).toFixed(2)}€</strong></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        
+        <script>
+          window.onload = function() {
+            window.print();
+            setTimeout(function() { window.close(); }, 500);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -227,14 +428,14 @@ export default function AdminDashboard() {
     }
   };
 
-  /* Derived stats */
+  // Cálculo de estadísticas globales
   const totalProducts = products.length;
   const lowStock = products.filter(p => p.stock <= 5).length;
   const avgPrice = totalProducts > 0
     ? (products.reduce((s, p) => s + Number(p.price), 0) / totalProducts).toFixed(2)
     : '0.00';
 
-  /* Filtered list */
+  // Filtrado dinámico según la barra de búsqueda
   const filtered = products.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.brand.toLowerCase().includes(search.toLowerCase())
@@ -244,11 +445,10 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-base py-10 px-4">
       <div className="max-w-7xl mx-auto">
 
-        {/* ── Header ── */}
+        {/* Encabezado */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
             <div className="inline-flex items-center gap-2 bg-accent/10 text-accent text-xs font-black px-3 py-1 rounded-full mb-3 uppercase tracking-widest">
-
               Panel de Administración
             </div>
             <h1 className="text-4xl font-black text-primary leading-tight">Gestión del Catálogo</h1>
@@ -256,19 +456,28 @@ export default function AdminDashboard() {
               Bienvenido, <span className="text-accent font-semibold">{user?.user_metadata?.name || user?.email}</span>
             </p>
           </div>
-          <button id="admin-new-product-btn" onClick={openCreate} className="btn-accent px-5 py-2.5 text-sm shrink-0">
-            <IconPlus /> Nuevo Producto
-          </button>
+          <div className="flex flex-col gap-2 shrink-0 sm:items-end">
+            <button id="admin-new-product-btn" onClick={openCreate} className="btn-accent px-5 py-2.5 text-sm shrink-0 flex items-center gap-2">
+              <IconPlus /> Nuevo Producto
+            </button>
+            <button
+              onClick={handleDownloadPDF}
+              disabled={orders.length === 0}
+              className="px-5 py-2 rounded-lg border border-border bg-raised text-secondary text-xs font-semibold cursor-pointer hover:border-accent hover:text-accent transition-all duration-200 flex items-center gap-2 self-stretch sm:self-auto justify-center"
+            >
+              <IconFileDown /> Descargar PDF (Ventas)
+            </button>
+          </div>
         </div>
 
-        {/* ── Stats ── */}
+        {/* Panel de Estadísticas */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
           <StatCard icon={<IconBox />} label="Productos en catálogo" value={totalProducts} sub="Total registrados" />
           <StatCard icon={<IconTag />} label="Precio medio" value={`${avgPrice}€`} sub="Media del catálogo" />
           <StatCard icon={<IconAlert />} label="Stock bajo" value={lowStock} sub="5 unidades o menos" />
         </div>
 
-        {/* ── Search bar ── */}
+        {/* Barra de búsqueda */}
         <div className="card p-4 mb-6 flex items-center gap-3">
           <span className="text-muted shrink-0"><IconSearch /></span>
           <input
@@ -286,7 +495,7 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* ── Products table ── */}
+        {/* Listado en tabla de los artículos */}
         {loading ? (
           <div className="space-y-3">
             {[...Array(5)].map((_, i) => (
@@ -322,7 +531,7 @@ export default function AdminDashboard() {
                       key={product.id}
                       className="border-b border-border last:border-0 hover:bg-raised/60 transition-colors duration-150"
                     >
-                      {/* Product info */}
+                      {/* Información de producto */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-11 h-11 rounded-xl bg-raised border border-border overflow-hidden shrink-0 flex items-center justify-center">
@@ -342,15 +551,15 @@ export default function AdminDashboard() {
                         </div>
                       </td>
 
-                      {/* Brand */}
+                      {/* Marca */}
                       <td className="px-6 py-4 text-sm text-secondary hidden md:table-cell">{product.brand}</td>
 
-                      {/* Price */}
+                      {/* Precio */}
                       <td className="px-6 py-4">
                         <span className="text-sm font-black text-accent">{Number(product.price).toFixed(2)}€</span>
                       </td>
 
-                      {/* Stock */}
+                      {/* Nivel de stock */}
                       <td className="px-6 py-4 hidden sm:table-cell">
                         <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${
                           product.stock === 0
@@ -373,7 +582,7 @@ export default function AdminDashboard() {
                         </span>
                       </td>
 
-                      {/* Actions */}
+                      {/* Botones de edición y borrado */}
                       <td className="px-6 py-4">
                         <div className="flex justify-end gap-2">
                           <button
@@ -400,7 +609,7 @@ export default function AdminDashboard() {
               </table>
             </div>
 
-            {/* Footer count */}
+            {/* Contadores y actualización */}
             <div className="px-6 py-3 border-t border-border bg-raised flex items-center justify-between">
               <p className="text-xs text-muted">
                 Mostrando <strong className="text-secondary">{filtered.length}</strong> de <strong className="text-secondary">{totalProducts}</strong> productos
@@ -413,7 +622,7 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* ── Modals ── */}
+      {/* Ventanas modales */}
       {showModal && (
         <ProductModal
           editId={editId}

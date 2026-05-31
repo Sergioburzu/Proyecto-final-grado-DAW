@@ -41,7 +41,7 @@ export default function ContactoPage() {
   return (
     <div className="min-h-screen bg-base">
 
-      {/* Hero banner */}
+      {/* Banner superior de presentación */}
       <div className="bg-raised border-b border-border pt-16 pb-12 text-center px-6 relative overflow-hidden">
         <img src={logoImg} alt="SNEAK-OUT" className="h-24 mx-auto mb-6" />
         <h1 className="text-4xl font-black text-primary mb-4">Contáctanos</h1>
@@ -50,10 +50,10 @@ export default function ContactoPage() {
         </p>
       </div>
 
-      {/* Content */}
+      {/* Contenedor principal de información y formulario */}
       <div className="max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-12">
 
-        {/* Info cards */}
+        {/* Tarjetas informativas de contacto físico y digital */}
         <div>
           <h2 className="text-2xl font-black text-primary mb-6">Información de contacto</h2>
 
@@ -74,7 +74,7 @@ export default function ContactoPage() {
             </div>
           ))}
 
-          {/* Social */}
+          {/* Redes sociales */}
           <div className="mt-4">
             <p className="font-bold text-muted mb-3 text-[0.85rem]">Síguenos</p>
             <div className="flex gap-3 flex-wrap">
@@ -88,7 +88,7 @@ export default function ContactoPage() {
           </div>
         </div>
 
-        {/* Contact form */}
+        {/* Formulario de contacto directo con EmailJS */}
         <div className="card p-10">
           <h2 className="text-2xl font-black text-primary mb-2">Envíanos un mensaje</h2>
           <p className="text-secondary text-sm mb-8">Responderemos en menos de 24 horas en días laborables.</p>
