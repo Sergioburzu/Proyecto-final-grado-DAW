@@ -88,7 +88,7 @@ export default function HomePage() {
     }
   };
 
-  // ── Derived values from products (no hardcode) ─────────────────────────
+  //Derived values from products
   const brands = useMemo(() => {
     const set = new Set(products.map(p => p.brand).filter(Boolean));
     return [...set].sort();
@@ -106,7 +106,7 @@ export default function HomePage() {
     }
   }, [catalogMaxPrice]);
 
-  // ── Filtered + sorted list ─────────────────────────────────────────────
+  // Filtered + sorted list
   const filteredProducts = useMemo(() => {
     let list = [...products];
     if (selectedBrands.length > 0)
@@ -137,7 +137,7 @@ export default function HomePage() {
     );
   };
 
-  // ── Abrir modal: copiar estado actual a draft ──────────────────────────
+  // Open modal: copy current state to draft
   const openFilter = () => {
     setDraftBrands([...selectedBrands]);
     setDraftPrice(priceMax ?? catalogMaxPrice);
@@ -145,7 +145,7 @@ export default function HomePage() {
     setFilterOpen(true);
   };
 
-  // ── Aplicar draft al estado real ──────────────────────────────────────
+  // Apply draft to real state
   const applyFilters = () => {
     setSelectedBrands(draftBrands);
     setPriceMax(draftPrice);
@@ -375,7 +375,7 @@ export default function HomePage() {
     );
   }
 
-  /* ── Main view ── */
+  /* Main view */
   return (
     <div className="min-h-screen bg-base">
 

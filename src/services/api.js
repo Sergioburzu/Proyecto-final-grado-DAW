@@ -34,7 +34,7 @@ export const getProduct = async (id) => {
   const { data, error } = await supabase
     .from('products')
     .select('*')
-    .eq('id', id)
+    .eq('id', id)//eq es como el where
     .single();
   if (error) throw error;
   return { data };
@@ -99,7 +99,7 @@ export const deleteProduct = async (id) => {
   return { data: null };
 };
 
-// ─── Orders ───────────────────────────────────────────────────────────────────
+// ORDERS
 
 /**
  * Crea un pedido y sus líneas de producto.
@@ -157,7 +157,7 @@ export const getOrders = async () => {
   return { data };
 };
 
-// ─── Favorites ────────────────────────────────────────────────────────────────
+// FAVORITES
 
 /**
  * Obtiene todos los favoritos del usuario actual con los detalles del producto.
