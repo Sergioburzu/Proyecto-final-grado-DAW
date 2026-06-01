@@ -399,7 +399,7 @@ export default function HomePage() {
               Ver Todo →
             </Link>
           </div>
-          // Los 4 productos en tendencia 
+          {/* // Los 4 productos en tendencia */}
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
@@ -431,7 +431,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          // Los 4 nuevos lanzamientos
+          {/* // Los 4 nuevos lanzamientos */}
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
