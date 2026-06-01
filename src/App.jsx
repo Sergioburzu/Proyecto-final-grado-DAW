@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useState } from 'react';
 
@@ -16,6 +16,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ContactoPage from './pages/ContactoPage';
 import ProfilePage from './pages/ProfilePage';
+import Page404 from './pages/404page';
 
 // Componente de ruta protegida para usuarios autenticados
 function PrivateRoute({ children }) {
@@ -41,38 +42,7 @@ function Layout() {
       <Navbar onCartOpen={() => setCartOpen(true)} />
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       <main>
-        <Routes>
-          <Route path="/"            element={<HomePage />} />
-          <Route path="/producto/:id" element={<ProductDetailPage />} />
-          <Route path="/contacto"     element={<ContactoPage />} />
-          <Route path="/login"        element={<LoginPage />} />
-          <Route path="/register"     element={<RegisterPage />} />
-          <Route
-            path="/checkout"
-            element={
-              <PrivateRoute>
-                <CheckoutPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/perfil"
-            element={
-              <PrivateRoute>
-                <ProfilePage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Outlet />
       </main>
     </>
   );
@@ -94,7 +64,40 @@ export default function App() {
               },
             }}
           />
-          <Layout />
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/"            element={<HomePage />} />
+              <Route path="/producto/:id" element={<ProductDetailPage />} />
+              <Route path="/contacto"     element={<ContactoPage />} />
+              <Route path="/login"        element={<LoginPage />} />
+              <Route path="/register"     element={<RegisterPage />} />
+              <Route
+                path="/checkout"
+                element={
+                  <PrivateRoute>
+                    <CheckoutPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/perfil"
+                element={
+                  <PrivateRoute>
+                    <ProfilePage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                }
+              />
+            </Route>
+            <Route path="*" element={<Page404 />} />
+          </Routes>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
