@@ -51,7 +51,7 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
   };
 
-  // Determina privilegios de administrador a partir de metadatos
+  // Determina privilegios de administrador a partir de metadatos en supabase
   const isAdmin = user?.user_metadata?.role === 'admin';
 
   return (

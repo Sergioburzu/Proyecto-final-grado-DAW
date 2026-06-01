@@ -94,6 +94,7 @@ export default function HomePage() {
     return [...set].sort();
   }, [products]);
 
+  // Precio más alto de los productos para el filtro
   const catalogMaxPrice = useMemo(() => {
     if (!products.length) return 0;
     return Math.ceil(Math.max(...products.map(p => Number(p.price))));
@@ -375,7 +376,7 @@ export default function HomePage() {
     );
   }
 
-  /* Vista principal de la landing page */
+  // Vista principal de la landing page
   return (
     <div className="min-h-screen bg-base">
 
@@ -398,7 +399,7 @@ export default function HomePage() {
               Ver Todo →
             </Link>
           </div>
-
+          // Los 4 productos en tendencia 
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
@@ -413,7 +414,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Línea divisoria */}
+    
       <div className="h-px bg-gradient-to-r from-transparent via-border2 to-transparent mx-8" />
 
       {/* Nuevos Lanzamientos */}
@@ -430,6 +431,7 @@ export default function HomePage() {
             </Link>
           </div>
 
+          // Los 4 nuevos lanzamientos
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (

@@ -41,6 +41,7 @@ export default function ProductDetailPage() {
   const [favLoading, setFavLoading] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
 
+  // Carga de el producto y sus vistas 
   useEffect(() => {
     setSelected(null); setThumb(0);
     window.scrollTo({ top: 0 });

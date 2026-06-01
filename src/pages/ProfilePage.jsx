@@ -124,9 +124,6 @@ export default function ProfilePage() {
                     </div>
                   ))}
                 </div>
-                <button className="mt-8 px-5 py-2.5 bg-transparent border border-accent text-accent rounded-xl text-sm font-semibold hover:bg-accent hover:text-white transition-colors duration-200">
-                  Editar Datos
-                </button>
               </div>
             )}
 
@@ -215,7 +212,7 @@ export default function ProfilePage() {
             {activeTab === 'favoritos' && (
               <div className="bg-raised border border-border p-6 rounded-2xl">
                 <h2 className="text-xl font-bold text-primary mb-4">Mis Favoritos</h2>
-                
+
                 {favLoading ? (
                   <div className="text-center py-10 text-muted">Cargando favoritos...</div>
                 ) : favorites.length === 0 ? (
