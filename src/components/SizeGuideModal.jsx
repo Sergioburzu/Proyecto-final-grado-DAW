@@ -57,6 +57,7 @@ export default function SizeGuideModal({ isOpen, onClose, productSizes = [] }) {
         return numA - numB;
       });
 
+    //Devuelve las tallas disponibles de cada producto
     return allSizes.map(size => {
       const conv = getConversion(size);
       const isAvailable = normalizedProductSizes.includes(size);

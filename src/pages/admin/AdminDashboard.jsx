@@ -395,6 +395,8 @@ export default function AdminDashboard() {
     setShowModal(true);
   };
 
+
+  //Creacion y actualizacion de productos
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
